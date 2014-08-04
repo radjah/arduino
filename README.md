@@ -1,10 +1,9 @@
-arduino
-=======
-
+#arduino#
 Мои скетчи.
 
-# voltmeter
-
+##voltmeter##
 Вольтметр на 5 вольт.
-"+" - A0
-"-" - GND
+
+- "+" - A0
+- "-" - GND
+
