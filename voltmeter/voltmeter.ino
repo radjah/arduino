@@ -13,17 +13,17 @@
 #define LCD_D6        6
 #define LCD_D7        7
 
-// Объект для работы с дисплеем
+// РћР±СЉРµРєС‚ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РґРёСЃРїР»РµРµРј
 LiquidCrystal_I2C lcd(LCD_I2C_ADDR,
-LCD_EN,
-LCD_RW,
-LCD_RS,
-LCD_D4,
-LCD_D5,
-LCD_D6,
-LCD_D7);
+                      LCD_EN,
+                      LCD_RW,
+                      LCD_RS,
+                      LCD_D4,
+                      LCD_D5,
+                      LCD_D6,
+                      LCD_D7);
 
-// Массив символов для шкалы
+// РњР°СЃСЃРёРІ СЃРёРјРІРѕР»РѕРІ РґР»СЏ С€РєР°Р»С‹
 const uint8_t charBitmap[][8] = {
  { 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10, 0x10 },
  { 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18 },
@@ -32,71 +32,72 @@ const uint8_t charBitmap[][8] = {
  { 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f, 0x1f }
 };
 
-// Настройка
+// РќР°СЃС‚СЂРѕР№РєР°
 void setup() {
- // Создание символов из массива
- int charBitmapSize = (sizeof(charBitmap ) / sizeof (charBitmap[0]));
- // Последовательный порт
- Serial.begin(9600);
- // Аналоговый вход
- pinMode(A0,INPUT);
- // Запись созданных символов в дисплей
- lcd.begin(20,4);
- 
- for ( int i = 0; i < charBitmapSize; i++ )
- {
-  lcd.createChar ( i, (uint8_t *)charBitmap[i] );
- }
- 
- // Настройка подсветки
- lcd.setBacklightPin(BACKLIGHT,POSITIVE);
- lcd.setBacklight(HIGH);
- // Подготовка надписей
- lcd.clear();
- lcd.setCursor(0,1);
- lcd.print("0   1   2   3   4  5");
- 
+// РЎРѕР·РґР°РЅРёРµ СЃРёРјРІРѕР»РѕРІ РёР· РјР°СЃСЃРёРІР° 
+int charBitmapSize = (sizeof(charBitmap ) / sizeof (charBitmap[0]));  
+// РџРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅС‹Р№ РїРѕСЂС‚
+Serial.begin(9600);
+// РђРЅР°Р»РѕРіРѕРІС‹Р№ РІС…РѕРґ
+pinMode(A0,INPUT);
+// Р—Р°РїРёСЃСЊ СЃРѕР·РґР°РЅРЅС‹С… СЃРёРјРІРѕР»РѕРІ РІ РґРёСЃРїР»РµР№
+lcd.begin(20,4);
+
+   for ( int i = 0; i < charBitmapSize; i++ )
+   {
+      lcd.createChar ( i, (uint8_t *)charBitmap[i] );
+   }
+
+// РќР°СЃС‚СЂРѕР№РєР° РїРѕРґСЃРІРµС‚РєРё
+lcd.setBacklightPin(BACKLIGHT,POSITIVE);
+lcd.setBacklight(HIGH);
+// РџРѕРґРіРѕС‚РѕРІРєР° РЅР°РґРїРёСЃРµР№
+lcd.clear();
+lcd.setCursor(0,1);
+lcd.print("0   1   2   3   4  5");
+
 }
 
-// Основной код
+// РћСЃРЅРѕРІРЅРѕР№ РєРѕРґ
 void loop() {
- // Переменные
- char A0str[20]="" ;
- char str4[20]="" ;
- int A0val;
- float barl;
- // Считывание значения напряжения
- A0val=analogRead(A0);
- // Расчет напряжения и вывод на первую строку
- lcd.home();
- lcd.setCursor(0,0);
- sprintf(A0str, "U = %4d mV", int(A0val*4.883));
- lcd.print(A0str);
- // И в последовательный порт
- Serial.println(A0str);
- // Формирования полоски.
- lcd.setCursor(0,2);
- // Количество закрашенных мест
- barl = 20.0/1024.0*float(A0val);
- // Вывод
- for ( int i = 0; i < int(barl); i++ )
- {
-  lcd.print(char(4));
- }
- // Определение и вывод
- // конца полоски
- int tmp = int(A0val*4.883) % 250;
- int partchar = tmp / 50;
- if (partchar > 0) {
+  // РџРµСЂРµРјРµРЅРЅС‹Рµ
+  char A0str[20]="" ;
+  char str4[20]="" ;
+  int A0val;
+  float barl;
+  // РЎС‡РёС‚С‹РІР°РЅРёРµ Р·РЅР°С‡РµРЅРёСЏ РЅР°РїСЂСЏР¶РµРЅРёСЏ
+  A0val=analogRead(A0);
+  // Р Р°СЃС‡РµС‚ РЅР°РїСЂСЏР¶РµРЅРёСЏ Рё РІС‹РІРѕРґ РЅР° РїРµСЂРІСѓСЋ СЃС‚СЂРѕРєСѓ
+  lcd.home();
+  lcd.setCursor(0,0);
+  sprintf(A0str, "U = %4d mV", int(A0val*4.883));
+  lcd.print(A0str);
+  // Р РІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅС‹Р№ РїРѕСЂС‚
+  Serial.println(A0str);
+  // Р¤РѕСЂРјРёСЂРѕРІР°РЅРёСЏ РїРѕР»РѕСЃРєРё.
+  lcd.setCursor(0,2);
+  // РљРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°РєСЂР°С€РµРЅРЅС‹С… РјРµСЃС‚
+  barl = 20.0/1024.0*float(A0val);
+  // Р’С‹РІРѕРґ
+  for ( int i = 0; i < int(barl); i++ )
+  {
+    lcd.print(char(4));
+  }
+  // РћРїСЂРµРґРµР»РµРЅРёРµ Рё РІС‹РІРѕРґ
+  // РєРѕРЅС†Р° РїРѕР»РѕСЃРєРё
+  int tmp = int(A0val*4.883) % 250;
+  int partchar = tmp / 50;
+  if (partchar > 0) {
   lcd.print(char(partchar));
   } else {
-  lcd.print(" ");
- }
- // И добивание пробелами хвоста
- for ( int j = barl+2; j < 21; j++ )
- {
-  lcd.print(" ");
- }
- // Задержка переде следующим замером
- delay(100);
+    lcd.print(" ");
+  }
+  // Р РґРѕР±РёРІР°РЅРёРµ РїСЂРѕР±РµР»Р°РјРё С…РІРѕСЃС‚Р°
+  for ( int j = barl+2; j < 21; j++ )
+  {
+    lcd.print(" ");
+  }
+  // Р—Р°РґРµСЂР¶РєР° РїРµСЂРµРґРµ СЃР»РµРґСѓСЋС‰РёРј Р·Р°РјРµСЂРѕРј
+  delay(100);
 }
+
