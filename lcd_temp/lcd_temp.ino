@@ -1,3 +1,4 @@
+#include <SoftwareSerial.h>
 #include <Wire.h>
 #include <LCD.h>
 #include <LiquidCrystal_I2C.h>
@@ -23,6 +24,9 @@ LiquidCrystal_I2C lcd(LCD_I2C_ADDR,
                       LCD_D6,
                       LCD_D7);
 
+// Программный Serial
+SoftwareSerial swSerial(10, 11); // RX - 10, TX - 11
+
 // Инициализая
 void setup() {
   // ЖК дисплей
@@ -38,6 +42,7 @@ void setup() {
   lcd.print("T3=_____C T4=_____C");
   // Последовательный порт
   Serial.begin(9600);
+  swSerial.begin(9600);
 }
 
 void loop() {
