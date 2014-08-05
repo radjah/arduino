@@ -30,6 +30,12 @@ void setup() {
   lcd.setBacklightPin(BACKLIGHT,POSITIVE);
   lcd.setBacklight(HIGH);
   lcd.clear();
+//  lcd.home();
+  // Шаблон показаний
+  lcd.setCursor(0,0);
+  lcd.print("T1=_____C T2=_____C");
+  lcd.setCursor(0,1);
+  lcd.print("T3=_____C T4=_____C");
   // Последовательный порт
   Serial.begin(9600);
 }
@@ -42,6 +48,8 @@ void loop() {
   String Eps="";
   String Tmp="";
   char sTmp[20]="";
+  char TmpOut[5]="";
+  float DigTmp=0.0;
   // Чтение из порта
   if (Serial.available() > 0) {
     char RecvChar = Serial.read();
@@ -58,21 +66,43 @@ void loop() {
           RecvStr += char(Serial.read());
         }
         // Выводим последовательность
-        //lcd.setCursor(0,0);
         RecvStr.trim();
-        //lcd.print(RecvStr);
         // Выделяем и выводим e
-        lcd.setCursor(0,1);
         Eps=RecvStr.substring(5,7);
-        lcd.print(float(Eps.toInt()+1)/100);
         // Выделяем и выводим тепературу
-        lcd.setCursor(0,2);
         Tmp=RecvStr.substring(7,11);
-        Tmp.trim();
-        sprintf(sTmp,"T1=%4d'C T2=TEST'C", Tmp.toInt());
-        lcd.print(sTmp);
+        switch (Tmp[0]){
+          case '-':
+          // Отрицательные значения
+            if (Tmp[1]=='F'|Tmp[1]==' '){
+              Tmp[1]='0';
+            }
+            DigTmp=float(Tmp.toInt())/10;
+            dtostrf(DigTmp, 5, 1, TmpOut);
+            lcd.setCursor(3,0);
+            lcd.print(TmpOut);
+//          lcd.setCursor(8,0);
+//          lcd.print("C");
+            break;
+          case '>':
+          // Превышение диапазона
+            lcd.setCursor(3,0);
+            lcd.print(">>>>>");
+            break;
+          case '<':
+          // Ниже диапазона
+            lcd.setCursor(3,0);
+            lcd.print("<<<<<");
+            break;
+          default:
+          // Положительные в диапазоне
+            lcd.setCursor(3,0);
+            lcd.print(" ");
+            lcd.print(Tmp);
+        }
       }
     }
   }
+  // Задержка между замерами
   delay(1000);
 }
