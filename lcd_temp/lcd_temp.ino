@@ -43,6 +43,7 @@ void setup() {
   lcd.print("T3=_____C T4=_____C");
   // Последовательный порт
   Serial.begin(9600);
+  Serial1.begin(9600,SERIAL_8N2);
   swSerial.begin(9600);
 }
 
@@ -51,17 +52,22 @@ void loop() {
   lcd.home();
   // Переменные
   int i; // Счетчик
+  char RecvChar;
   // Serial
   String RecvStr="";
   String Eps="";
   String Tmp="";
+  // Serial1
+  String s1RecvStr="";
+  String s1Eps="";
+  String s1Tmp="";
   // swSerial
   String swRecvStr="";
   String swEps="";
   String swTmp="";
-  // Чтение из порта
+  // Чтение из порта Serial0
   if (Serial.available() > 0) {
-    char RecvChar = Serial.read();
+    RecvChar = Serial.read();
     // Отладочный вывод
     Serial.println(Serial.available());
     Serial.println(RecvChar);
@@ -83,9 +89,33 @@ void loop() {
       }
     }
   }
-  // Чтение из swSeial
+  // Чтение из порта Serial1
+  if (Serial1.available() > 0) {
+    RecvChar = Serial1.read();
+    // Отладочный вывод
+    Serial1.println(Serial1.available());
+    Serial1.println(RecvChar);
+    // Проверка на начало последовательности
+    if (RecvChar == '=') {
+      // Вся ли строка в буфере?
+      if (Serial1.available() >= 14) {
+        // Если вся, то читаем всю.
+        for (i=0;i<14;i++) {
+          s1RecvStr += char(Serial1.read());
+        }
+        // Выводим последовательность
+        s1RecvStr.trim();
+        // Выделяем и выводим e
+        s1Eps=s1RecvStr.substring(5,7);
+        // Выделяем и выводим тепературу
+        s1Tmp=s1RecvStr.substring(7,11);
+        PrintResult(s1Tmp, 1, 3);
+      }
+    }
+  }
+  // Чтение из порта swSeial
   if (swSerial.available() > 0) {
-    char RecvChar = swSerial.read();
+    RecvChar = swSerial.read();
     // Отладочный вывод
     swSerial.println(swSerial.available());
     swSerial.println(RecvChar);
