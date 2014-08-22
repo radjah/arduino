@@ -44,6 +44,7 @@ void setup() {
   // Последовательный порт
   Serial.begin(9600);
   Serial1.begin(9600, SERIAL_8N2);
+  Serial2.begin(9600, SERIAL_8N2);
   swSerial.begin(9600);
 }
 
@@ -61,6 +62,10 @@ void loop() {
   String s1RecvStr = "";
   String s1Eps = "";
   String s1Tmp = "";
+  // Serial2
+  String s2RecvStr = "";
+  String s2Eps = "";
+  String s2Tmp = "";
   // swSerial
   String swRecvStr = "";
   String swEps = "";
@@ -69,8 +74,8 @@ void loop() {
   if (Serial.available() > 0) {
     RecvChar = Serial.read();
     // Отладочный вывод
-    Serial.println(Serial.available());
-    Serial.println(RecvChar);
+/*    Serial.println(Serial.available());
+    Serial.println(RecvChar);*/
     // Проверка на начало последовательности
     if (RecvChar == '=') {
       // Вся ли строка в буфере?
@@ -96,8 +101,8 @@ void loop() {
   if (Serial1.available() > 0) {
     RecvChar = Serial1.read();
     // Отладочный вывод
-    Serial1.println(Serial1.available());
-    Serial1.println(RecvChar);
+/*    Serial.println(Serial1.available());
+    Serial.println(RecvChar);*/
     // Проверка на начало последовательности
     if (RecvChar == '=') {
       // Вся ли строка в буфере?
@@ -115,7 +120,35 @@ void loop() {
         s1Eps = s1RecvStr.substring(5, 7);
         // Выделяем и выводим тепературу
         s1Tmp = s1RecvStr.substring(7, 11);
-        PrintResult(s1Tmp, 1, 3);
+        PrintResult(s1Tmp, 0, 13);
+      }
+    }
+  }
+  
+  // Чтение из порта Serial2
+  if (Serial2.available() > 0) {
+    RecvChar = Serial2.read();
+    // Отладочный вывод
+/*    Serial.println(Serial2.available());
+    Serial.println(RecvChar); */
+    // Проверка на начало последовательности
+    if (RecvChar == '=') {
+      // Вся ли строка в буфере?
+      while (Serial2.available() < 14) {
+        delay(10);
+      }
+      if (Serial2.available() >= 14) {
+        // Если вся, то читаем всю.
+        for (i = 0; i < 14; i++) {
+          s2RecvStr += char(Serial2.read());
+        }
+        // Выводим последовательность
+        s2RecvStr.trim();
+        // Выделяем и выводим e
+        s2Eps = s2RecvStr.substring(5, 7);
+        // Выделяем и выводим тепературу
+        s2Tmp = s2RecvStr.substring(7, 11);
+        PrintResult(s2Tmp, 1, 3);
       }
     }
   }
@@ -142,7 +175,7 @@ void loop() {
         swEps = swRecvStr.substring(5, 7);
         // Выделяем и выводим тепературу
         swTmp = swRecvStr.substring(7, 11);
-        PrintResult(swTmp, 0, 13);
+        PrintResult(swTmp, 1, 13);
       }
     }
   }
