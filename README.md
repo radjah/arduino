@@ -17,3 +17,6 @@
 
 Для работы с датчиком используется библиотека [Adafruit-BMP085-Library](https://github.com/adafruit/Adafruit-BMP085-Library)
 
+## kelvin_emul ##
+Эмулятор вывода пирометра Кельвин Д.
+

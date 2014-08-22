@@ -31,19 +31,19 @@ SoftwareSerial swSerial(10, 11); // RX - 10, TX - 11
 // Инициализая
 void setup() {
   // ЖК дисплей
-  lcd.begin(20,4);
-  lcd.setBacklightPin(BACKLIGHT,POSITIVE);
+  lcd.begin(20, 4);
+  lcd.setBacklightPin(BACKLIGHT, POSITIVE);
   lcd.setBacklight(HIGH);
   lcd.clear();
-//  lcd.home();
+  //  lcd.home();
   // Шаблон показаний
-  lcd.setCursor(0,0);
+  lcd.setCursor(0, 0);
   lcd.print("T1=_____C T2=_____C");
-  lcd.setCursor(0,1);
+  lcd.setCursor(0, 1);
   lcd.print("T3=_____C T4=_____C");
   // Последовательный порт
   Serial.begin(9600);
-  Serial1.begin(9600,SERIAL_8N2);
+  Serial1.begin(9600, SERIAL_8N2);
   swSerial.begin(9600);
 }
 
@@ -54,17 +54,17 @@ void loop() {
   int i; // Счетчик
   char RecvChar;
   // Serial
-  String RecvStr="";
-  String Eps="";
-  String Tmp="";
+  String RecvStr = "";
+  String Eps = "";
+  String Tmp = "";
   // Serial1
-  String s1RecvStr="";
-  String s1Eps="";
-  String s1Tmp="";
+  String s1RecvStr = "";
+  String s1Eps = "";
+  String s1Tmp = "";
   // swSerial
-  String swRecvStr="";
-  String swEps="";
-  String swTmp="";
+  String swRecvStr = "";
+  String swEps = "";
+  String swTmp = "";
   // Чтение из порта Serial0
   if (Serial.available() > 0) {
     RecvChar = Serial.read();
@@ -74,17 +74,20 @@ void loop() {
     // Проверка на начало последовательности
     if (RecvChar == '=') {
       // Вся ли строка в буфере?
+      while (Serial.available() < 14) {
+        delay(10);
+      }
       if (Serial.available() >= 14) {
         // Если вся, то читаем всю.
-        for (i=0;i<14;i++) {
+        for (i = 0; i < 14; i++) {
           RecvStr += char(Serial.read());
         }
         // Выводим последовательность
         RecvStr.trim();
         // Выделяем и выводим e
-        Eps=RecvStr.substring(5,7);
+        Eps = RecvStr.substring(5, 7);
         // Выделяем и выводим тепературу
-        Tmp=RecvStr.substring(7,11);
+        Tmp = RecvStr.substring(7, 11);
         PrintResult(Tmp, 0, 3);
       }
     }
@@ -98,17 +101,20 @@ void loop() {
     // Проверка на начало последовательности
     if (RecvChar == '=') {
       // Вся ли строка в буфере?
+      while (Serial1.available() < 14) {
+        delay(10);
+      }
       if (Serial1.available() >= 14) {
         // Если вся, то читаем всю.
-        for (i=0;i<14;i++) {
+        for (i = 0; i < 14; i++) {
           s1RecvStr += char(Serial1.read());
         }
         // Выводим последовательность
         s1RecvStr.trim();
         // Выделяем и выводим e
-        s1Eps=s1RecvStr.substring(5,7);
+        s1Eps = s1RecvStr.substring(5, 7);
         // Выделяем и выводим тепературу
-        s1Tmp=s1RecvStr.substring(7,11);
+        s1Tmp = s1RecvStr.substring(7, 11);
         PrintResult(s1Tmp, 1, 3);
       }
     }
@@ -122,18 +128,21 @@ void loop() {
     // Проверка на начало последовательности
     if (RecvChar == '=') {
       // Вся ли строка в буфере?
+      while (swSerial.available() < 14) {
+        delay(10);
+      }
       if (swSerial.available() >= 14) {
         // Если вся, то читаем всю.
-        for (i=0;i<14;i++) {
+        for (i = 0; i < 14; i++) {
           swRecvStr += char(swSerial.read());
         }
         // Выводим последовательность
         RecvStr.trim();
         // Выделяем и выводим e
-        swEps=swRecvStr.substring(5,7);
+        swEps = swRecvStr.substring(5, 7);
         // Выделяем и выводим тепературу
-        swTmp=swRecvStr.substring(7,11);
-        PrintResult(swTmp, 0, 13);        
+        swTmp = swRecvStr.substring(7, 11);
+        PrintResult(swTmp, 0, 13);
       }
     }
   }
@@ -142,37 +151,37 @@ void loop() {
 }
 
 // Вывод на экран
-void PrintResult(String Input, int lcdLine, int lcdPos){
+void PrintResult(String Input, int lcdLine, int lcdPos) {
   float DigTmp;
-  char  TmpOut[6]="";
+  char  TmpOut[6] = "";
   swSerial.println(Input);
   swSerial.println(sizeof(Input));
-  switch (Input[0]){
+  switch (Input[0]) {
     case '-':
-    // Отрицательные значения
-      if (Input[1]=='F'){
-        Input[1]='0';
+      // Отрицательные значения
+      if (Input[1] == 'F') {
+        Input[1] = '0';
       }
-      DigTmp=float(Input.toInt())/10;
+      DigTmp = float(Input.toInt()) / 10;
       swSerial.println(Input);
       dtostrf(DigTmp, 5, 1, TmpOut);
       swSerial.println(TmpOut);
-      lcd.setCursor(lcdPos,lcdLine);
+      lcd.setCursor(lcdPos, lcdLine);
       lcd.print(TmpOut);
       break;
     case '>':
-    // Превышение диапазона
-      lcd.setCursor(lcdPos,lcdLine);
+      // Превышение диапазона
+      lcd.setCursor(lcdPos, lcdLine);
       lcd.print(">>>>>");
       break;
     case '<':
-    // Ниже диапазона
-      lcd.setCursor(lcdPos,lcdLine);
+      // Ниже диапазона
+      lcd.setCursor(lcdPos, lcdLine);
       lcd.print("<<<<<");
       break;
     default:
-    // Положительные в диапазоне
-      lcd.setCursor(lcdPos,lcdLine);
+      // Положительные в диапазоне
+      lcd.setCursor(lcdPos, lcdLine);
       lcd.print(" ");
       lcd.print(Input);
   }
