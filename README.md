@@ -13,9 +13,13 @@
 Скелет для считывания показаний пирометра и вывода значений на ЖК-дисплей.
 
 ## bar_lcd ##
-Скетч для вывода показаний датчика BMP085/BMP180 на ЖК-дисплей.
+Скетч для вывода показаний датчиков BMP085/BMP180, DHT11 на ЖК-дисплей.
 
-Для работы с датчиком используется библиотека [Adafruit-BMP085-Library](https://github.com/adafruit/Adafruit-BMP085-Library)
+Для работы с датчиками используется следующие библиотеки:
+
+- [Adafruit-BMP085-Library](https://github.com/adafruit/Adafruit-BMP085-Library) для BMP085/BMP180
+- [DHT-sensor-library](https://github.com/adafruit/DHT-sensor-library) для DHT11
+
 
 ## kelvin_emul ##
 Эмулятор вывода пирометра Кельвин Д.
