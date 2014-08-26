@@ -22,6 +22,7 @@ Adafruit_BMP085         bmp;
 DHT                     dht(2, DHT11); // S подключен к D2
 
 void setup() {
+  Serial.begin(9600,SERIAL_8N2);
   lcd.begin(20,4);
   lcd.setBacklightPin(BACKLIGHT,POSITIVE);
   lcd.setBacklight(HIGH);
@@ -57,7 +58,8 @@ void loop() {
   dtostrf(Temp, 14, 2, StrTemp);
   lcd.print(StrTemp);
   // Вывод давления
-  dtostrf(float(pres)/133.32, 14, 2, StrPresHg);
+  float preshg=float(pres)/133.32;
+  dtostrf(preshg, 14, 2, StrPresHg);
   lcd.setCursor(6, 1);
   lcd.print(StrPresHg);
   // Данные с DHT11
@@ -66,6 +68,13 @@ void loop() {
   dtostrf(Hum, 14, 2, StrHum);
   lcd.setCursor(6, 2);
   lcd.print(StrHum);
+  Serial.print("T");
+  Serial.print(Temp);
+  Serial.print("P");
+  Serial.print(preshg);
+  Serial.print("H");
+  Serial.print(Hum);
+  Serial.print(char(13));
   // Задержка
   delay(2000);
 }
