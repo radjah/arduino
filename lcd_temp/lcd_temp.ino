@@ -61,12 +61,10 @@ void loop() {
   // Курсор на первый символ
   lcd.home();
   // Переменные
-  int i; // Счетчик
-  char RecvChar;
+  int i;                 // Счетчик
+  char RecvChar;         // Полученный байт
   // Serial
-  String RecvStr = "";
-  String Eps = "";
-  String Tmp = "";
+  String RecvStr = "";   // Полученная строка
   // Чтение из порта Serial0
   if (Serial.available() > 0) {
     RecvChar = Serial.read();
@@ -185,10 +183,12 @@ void PrintResult(String Input, int lcdLine, int lcdPos) {
   char  TmpOut[6] = "";  // Температура строкой
   String  StrOut = "";   // Подстрока с температурой
   Input.trim();
+/*
   // Выделяем e авось пригодится
   String Eps = "";
   Eps = Input.substring(5, 7);
-  // Выделяем и выводим тепературу
+*/
+  // Выделяем и выводим температуру
   StrOut = Input.substring(7, 11);
   // Курсор на позицию
   lcd.setCursor(lcdPos, lcdLine);
