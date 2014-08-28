@@ -1,7 +1,5 @@
 #include <Adafruit_BMP085.h>
-
 #include <SoftwareSerial.h>
-
 #include <Wire.h>
 #include <LCD.h>
 #include <LiquidCrystal_I2C.h>
@@ -69,28 +67,9 @@ void loop() {
   String RecvStr = "";
   String Eps = "";
   String Tmp = "";
-/*  // Serial1
-  String s1RecvStr = "";
-  String s1Eps = "";
-  String s1Tmp = "";
-  // Serial2
-  String s2RecvStr = "";
-  String s2Eps = "";
-  String s2Tmp = "";
-  // Serial3
-  String s3RecvStr = "";
-  String s3Eps = "";
-  String s3Tmp = "";
-  // swSerial
-  String swRecvStr = "";
-  String swEps = "";
-  String swTmp = ""; */
   // Чтение из порта Serial0
   if (Serial.available() > 0) {
     RecvChar = Serial.read();
-    // Отладочный вывод
-/*    Serial.println(Serial.available());
-    Serial.println(RecvChar);*/
     // Проверка на начало последовательности
     if (RecvChar == '=') {
       // Вся ли строка в буфере?
@@ -103,21 +82,13 @@ void loop() {
           RecvStr += char(Serial.read());
         }
         // Выводим последовательность
-        RecvStr.trim();
-        // Выделяем и выводим e
-        Eps = RecvStr.substring(5, 7);
-        // Выделяем и выводим тепературу
-        Tmp = RecvStr.substring(7, 11);
-        PrintResult(Tmp, 0, 3);
+        PrintResult(RecvStr, 0, 3);
       }
     }
   }
   // Чтение из порта Serial1
   if (Serial1.available() > 0) {
     RecvChar = Serial1.read();
-    // Отладочный вывод
-/*    Serial.println(Serial1.available());
-    Serial.println(RecvChar);*/
     // Проверка на начало последовательности
     if (RecvChar == '=') {
       // Вся ли строка в буфере?
@@ -130,22 +101,14 @@ void loop() {
           RecvStr += char(Serial1.read());
         }
         // Выводим последовательность
-        RecvStr.trim();
-        // Выделяем и выводим e
-        Eps = RecvStr.substring(5, 7);
-        // Выделяем и выводим тепературу
-        Tmp = RecvStr.substring(7, 11);
-        PrintResult(Tmp, 0, 13);
+        PrintResult(RecvStr, 0, 13);
       }
     }
   }
-  
+
   // Чтение из порта Serial2
   if (Serial2.available() > 0) {
     RecvChar = Serial2.read();
-    // Отладочный вывод
-/*    Serial.println(Serial2.available());
-    Serial.println(RecvChar); */
     // Проверка на начало последовательности
     if (RecvChar == '=') {
       // Вся ли строка в буфере?
@@ -158,21 +121,13 @@ void loop() {
           RecvStr += char(Serial2.read());
         }
         // Выводим последовательность
-        RecvStr.trim();
-        // Выделяем и выводим e
-        Eps = RecvStr.substring(5, 7);
-        // Выделяем и выводим тепературу
-        Tmp = RecvStr.substring(7, 11);
-        PrintResult(Tmp, 1, 3);
+        PrintResult(RecvStr, 1, 3);
       }
     }
   }
   // Чтение из порта Serial3
   if (Serial3.available() > 0) {
     RecvChar = Serial3.read();
-    // Отладочный вывод
-/*    Serial.println(Serial3.available());
-    Serial.println(RecvChar); */
     // Проверка на начало последовательности
     if (RecvChar == '=') {
       // Вся ли строка в буфере?
@@ -185,21 +140,13 @@ void loop() {
           RecvStr += char(Serial3.read());
         }
         // Выводим последовательность
-        RecvStr.trim();
-        // Выделяем и выводим e
-        Eps = RecvStr.substring(5, 7);
-        // Выделяем и выводим тепературу
-        Tmp = RecvStr.substring(7, 11);
-        PrintResult(Tmp, 1, 13);
+        PrintResult(RecvStr, 1, 13);
       }
     }
   }
   // Чтение из порта swSeial
   if (swSerial.available() > 0) {
     RecvChar = swSerial.read();
-    // Отладочный вывод
-    swSerial.println(swSerial.available());
-    swSerial.println(RecvChar);
     // Проверка на начало последовательности
     if (RecvChar == '=') {
       // Вся ли строка в буфере?
@@ -212,23 +159,20 @@ void loop() {
           RecvStr += char(swSerial.read());
         }
         // Выводим последовательность
-        RecvStr.trim();
-        // Выделяем и выводим e
-        Eps = RecvStr.substring(5, 7);
-        // Выделяем и выводим тепературу
-        Tmp = RecvStr.substring(7, 11);
-        PrintResult(Tmp, 2, 3);
+        PrintResult(RecvStr, 2, 3);
       }
     }
   }
-  float readval; // Температура и давление
-  char sreadval[6]="";
+  float readval;            // Температура и давление числом
+  char sreadval[6] = "";    // Температура и давление строкой
+  // Чтение и вывод температуры
   readval = bmp.readTemperature();
   dtostrf(readval, 5, 1, sreadval);
   lcd.setCursor(2, 3);
   lcd.print(sreadval);
+  // Чтение и вывод давления
   readval = bmp.readPressure();
-  dtostrf(readval/133.32, 5, 1, sreadval);
+  dtostrf(readval / 133.32, 5, 1, sreadval);
   lcd.setCursor(12, 3);
   lcd.print(sreadval);
   // Задержка между замерами
@@ -237,37 +181,38 @@ void loop() {
 
 // Вывод на экран
 void PrintResult(String Input, int lcdLine, int lcdPos) {
-  float DigTmp;
-  char  TmpOut[6] = "";
-  swSerial.println(Input);
-  swSerial.println(sizeof(Input));
-  switch (Input[0]) {
+  float DigTmp;          // Температура числом
+  char  TmpOut[6] = "";  // Температура строкой
+  String  StrOut = "";   // Подстрока с температурой
+  Input.trim();
+  // Выделяем e авось пригодится
+  String Eps = "";
+  Eps = Input.substring(5, 7);
+  // Выделяем и выводим тепературу
+  StrOut = Input.substring(7, 11);
+  // Курсор на позицию
+  lcd.setCursor(lcdPos, lcdLine);
+  switch (StrOut[0]) {
     case '-':
       // Отрицательные значения
-      if (Input[1] == 'F') {
-        Input[1] = '0';
+      if (StrOut[1] == 'F') {
+        StrOut[1] = '0';
       }
-      DigTmp = float(Input.toInt()) / 10;
-      swSerial.println(Input);
+      DigTmp = float(StrOut.toInt()) / 10;
       dtostrf(DigTmp, 5, 1, TmpOut);
-      swSerial.println(TmpOut);
-      lcd.setCursor(lcdPos, lcdLine);
       lcd.print(TmpOut);
       break;
     case '>':
       // Превышение диапазона
-      lcd.setCursor(lcdPos, lcdLine);
       lcd.print(">>>>>");
       break;
     case '<':
       // Ниже диапазона
-      lcd.setCursor(lcdPos, lcdLine);
       lcd.print("<<<<<");
       break;
     default:
       // Положительные в диапазоне
-      lcd.setCursor(lcdPos, lcdLine);
       lcd.print(" ");
-      lcd.print(Input);
+      lcd.print(StrOut);
   }
 }
