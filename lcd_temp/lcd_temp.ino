@@ -69,7 +69,7 @@ void loop() {
   String RecvStr = "";
   String Eps = "";
   String Tmp = "";
-  // Serial1
+/*  // Serial1
   String s1RecvStr = "";
   String s1Eps = "";
   String s1Tmp = "";
@@ -84,7 +84,7 @@ void loop() {
   // swSerial
   String swRecvStr = "";
   String swEps = "";
-  String swTmp = "";
+  String swTmp = ""; */
   // Чтение из порта Serial0
   if (Serial.available() > 0) {
     RecvChar = Serial.read();
@@ -127,15 +127,15 @@ void loop() {
       if (Serial1.available() >= 14) {
         // Если вся, то читаем всю.
         for (i = 0; i < 14; i++) {
-          s1RecvStr += char(Serial1.read());
+          RecvStr += char(Serial1.read());
         }
         // Выводим последовательность
-        s1RecvStr.trim();
+        RecvStr.trim();
         // Выделяем и выводим e
-        s1Eps = s1RecvStr.substring(5, 7);
+        Eps = RecvStr.substring(5, 7);
         // Выделяем и выводим тепературу
-        s1Tmp = s1RecvStr.substring(7, 11);
-        PrintResult(s1Tmp, 0, 13);
+        Tmp = RecvStr.substring(7, 11);
+        PrintResult(Tmp, 0, 13);
       }
     }
   }
@@ -155,15 +155,15 @@ void loop() {
       if (Serial2.available() >= 14) {
         // Если вся, то читаем всю.
         for (i = 0; i < 14; i++) {
-          s2RecvStr += char(Serial2.read());
+          RecvStr += char(Serial2.read());
         }
         // Выводим последовательность
-        s2RecvStr.trim();
+        RecvStr.trim();
         // Выделяем и выводим e
-        s2Eps = s2RecvStr.substring(5, 7);
+        Eps = RecvStr.substring(5, 7);
         // Выделяем и выводим тепературу
-        s2Tmp = s2RecvStr.substring(7, 11);
-        PrintResult(s2Tmp, 1, 3);
+        Tmp = RecvStr.substring(7, 11);
+        PrintResult(Tmp, 1, 3);
       }
     }
   }
@@ -182,15 +182,15 @@ void loop() {
       if (Serial3.available() >= 14) {
         // Если вся, то читаем всю.
         for (i = 0; i < 14; i++) {
-          s3RecvStr += char(Serial3.read());
+          RecvStr += char(Serial3.read());
         }
         // Выводим последовательность
-        s3RecvStr.trim();
+        RecvStr.trim();
         // Выделяем и выводим e
-        s3Eps = s3RecvStr.substring(5, 7);
+        Eps = RecvStr.substring(5, 7);
         // Выделяем и выводим тепературу
-        s3Tmp = s3RecvStr.substring(7, 11);
-        PrintResult(s3Tmp, 1, 13);
+        Tmp = RecvStr.substring(7, 11);
+        PrintResult(Tmp, 1, 13);
       }
     }
   }
@@ -209,15 +209,15 @@ void loop() {
       if (swSerial.available() >= 14) {
         // Если вся, то читаем всю.
         for (i = 0; i < 14; i++) {
-          swRecvStr += char(swSerial.read());
+          RecvStr += char(swSerial.read());
         }
         // Выводим последовательность
         RecvStr.trim();
         // Выделяем и выводим e
-        swEps = swRecvStr.substring(5, 7);
+        Eps = RecvStr.substring(5, 7);
         // Выделяем и выводим тепературу
-        swTmp = swRecvStr.substring(7, 11);
-        PrintResult(swTmp, 2, 3);
+        Tmp = RecvStr.substring(7, 11);
+        PrintResult(Tmp, 2, 3);
       }
     }
   }
