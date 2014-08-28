@@ -1,3 +1,5 @@
+#include <Adafruit_BMP085.h>
+
 #include <SoftwareSerial.h>
 
 #include <Wire.h>
@@ -15,6 +17,8 @@
 #define LCD_D6        6
 #define LCD_D7        7
 
+Adafruit_BMP085 bmp;
+
 // Объект для работы с дисплеем
 LiquidCrystal_I2C lcd(LCD_I2C_ADDR,
                       LCD_EN,
@@ -30,6 +34,8 @@ SoftwareSerial swSerial(10, 11); // RX - 10, TX - 11
 
 // Инициализая
 void setup() {
+  // Датчик давления
+  bmp.begin();
   // ЖК дисплей
   lcd.begin(20, 4);
   lcd.setBacklightPin(BACKLIGHT, POSITIVE);
@@ -38,11 +44,13 @@ void setup() {
   //  lcd.home();
   // Шаблон показаний
   lcd.setCursor(0, 0);
-  lcd.print("T1=_____C T2=_____C");
+  lcd.print("T1:_____C T2:_____C");
   lcd.setCursor(0, 1);
-  lcd.print("T3=_____C T4=_____C");
+  lcd.print("T3:_____C T4:_____C");
   lcd.setCursor(0, 2);
-  lcd.print("T5=_____C");
+  lcd.print("T5:_____C");
+  lcd.setCursor(0, 3);
+  lcd.print("T:_____'C P:_____mm");
   // Последовательный порт
   Serial.begin(9600, SERIAL_8N2);
   Serial1.begin(9600, SERIAL_8N2);
@@ -213,6 +221,16 @@ void loop() {
       }
     }
   }
+  float readval; // Температура и давление
+  char sreadval[6]="";
+  readval = bmp.readTemperature();
+  dtostrf(readval, 5, 1, sreadval);
+  lcd.setCursor(2, 3);
+  lcd.print(sreadval);
+  readval = bmp.readPressure();
+  dtostrf(readval/133.32, 5, 1, sreadval);
+  lcd.setCursor(12, 3);
+  lcd.print(sreadval);
   // Задержка между замерами
   delay(100);
 }
