@@ -152,6 +152,7 @@ void ReadFromSerial(HardwareSerial *p_Serial, int lcdLine, int lcdPos) {
   char RecvChar;         // Полученный байт
   // Serial
   String RecvStr = "";   // Полученная строка
+//  String StrForCh = "=";
   // Чтение из порта Serial0
   if (p_Serial->available() > 0) {
     RecvChar = p_Serial->read();
@@ -166,6 +167,8 @@ void ReadFromSerial(HardwareSerial *p_Serial, int lcdLine, int lcdPos) {
         for (i = 0; i < 14; i++) {
           RecvStr += char(p_Serial->read());
         }
+//        StrForCh += RecvStr;
+//        ChechCRC(StrForCh);
         // Выводим последовательность
         PrintResult(RecvStr, lcdLine, lcdPos);
       }
@@ -173,3 +176,16 @@ void ReadFromSerial(HardwareSerial *p_Serial, int lcdLine, int lcdPos) {
   }
 }
 
+/* void ChechCRC (String RecvStr){
+//  boolean CheckResult = false;
+  byte sum = 0;
+  byte highq = 0, lowq = 0;
+  for (int i = 0; i < 12; i++) {
+    // Подготавливаем
+    highq = (byte)RecvStr[i] >> 4;
+    lowq = (byte)RecvStr[i] & B00001111;
+    sum = ~(highq ^ lowq);
+  } 
+  Serial.print(RecvStr);
+  Serial.println(sum, BIN);
+} */
