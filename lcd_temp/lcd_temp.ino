@@ -126,7 +126,7 @@ void PrintResult(String Input, int lcdLine, int lcdPos) {
 // Чтение строки из порта, обработка, проверка и вывод на экран
 void ReadFromSerial(Stream *p_Serial, int lcdLine, int lcdPos) {
   // Переменные
-  int i;                 // Счетчик
+  int i, cnt;                 // Счетчик
   char RecvChar;         // Полученный байт
   // Serial
   String RecvStr = "";   // Полученная строка
@@ -137,8 +137,12 @@ void ReadFromSerial(Stream *p_Serial, int lcdLine, int lcdPos) {
     // Проверка на начало последовательности
     if (RecvChar == '=') {
       // Вся ли строка в буфере?
+      cnt = 0;
       while (p_Serial->available() < 14) {
         delay(10);
+        // Защита от зацикливания
+        cnt++;
+        if (cnt > 100) return;
       }
       if (p_Serial->available() >= 14) {
         // Если вся, то читаем всю.
