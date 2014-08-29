@@ -58,37 +58,14 @@ void setup() {
 }
 
 void loop() {
-  // Переменные
-  int i;                 // Счетчик
-  char RecvChar;         // Полученный байт
-  // Serial
-  String RecvStr = "";   // Полученная строка
   // Курсор на первый символ
   lcd.home();
-  // Чтение из аппаратных портов
+  // Чтение из портов
   ReadFromSerial(&Serial, 0, 3);
   ReadFromSerial(&Serial1, 0, 13);
   ReadFromSerial(&Serial2, 1, 3);
   ReadFromSerial(&Serial3, 1, 13);
-  // Чтение из порта swSerial
-  if (swSerial.available() > 0) {
-    RecvChar = swSerial.read();
-    // Проверка на начало последовательности
-    if (RecvChar == '=') {
-      // Вся ли строка в буфере?
-      while (swSerial.available() < 14) {
-        delay(10);
-      }
-      if (swSerial.available() >= 14) {
-        // Если вся, то читаем всю.
-        for (i = 0; i < 14; i++) {
-          RecvStr += char(swSerial.read());
-        }
-        // Выводим последовательность
-        PrintResult(RecvStr, 2, 3);
-      }
-    }
-  }
+  ReadFromSerial(&swSerial, 2, 3);
   // Температору и давление
   float readval;            // Параметр числом
   char sreadval[6] = "";    // Параметр строкой
@@ -146,13 +123,14 @@ void PrintResult(String Input, int lcdLine, int lcdPos) {
   }
 }
 
-void ReadFromSerial(HardwareSerial *p_Serial, int lcdLine, int lcdPos) {
+// Чтение строки из порта, обработка, проверка и вывод на экран
+void ReadFromSerial(Stream *p_Serial, int lcdLine, int lcdPos) {
   // Переменные
   int i;                 // Счетчик
   char RecvChar;         // Полученный байт
   // Serial
   String RecvStr = "";   // Полученная строка
-//  String StrForCh = "=";
+  String StrForCh = "=";
   // Чтение из порта Serial0
   if (p_Serial->available() > 0) {
     RecvChar = p_Serial->read();
@@ -167,25 +145,25 @@ void ReadFromSerial(HardwareSerial *p_Serial, int lcdLine, int lcdPos) {
         for (i = 0; i < 14; i++) {
           RecvStr += char(p_Serial->read());
         }
-//        StrForCh += RecvStr;
-//        ChechCRC(StrForCh);
-        // Выводим последовательность
-        PrintResult(RecvStr, lcdLine, lcdPos);
+        StrForCh += RecvStr;
+        // Проверка результата и вывод
+        if (ChechCRC(StrForCh)) {
+          PrintResult(RecvStr, lcdLine, lcdPos);
+        }
       }
     }
   }
 }
 
-/* void ChechCRC (String RecvStr){
-//  boolean CheckResult = false;
-  byte sum = 0;
-  byte highq = 0, lowq = 0;
+// Проверка контрольной суммы
+boolean ChechCRC (String RecvStr) {
+  char sum = 0;
+  // Сложить все тетрады...
   for (int i = 0; i < 12; i++) {
-    // Подготавливаем
-    highq = (byte)RecvStr[i] >> 4;
-    lowq = (byte)RecvStr[i] & B00001111;
-    sum = ~(highq ^ lowq);
-  } 
-  Serial.print(RecvStr);
-  Serial.println(sum, BIN);
-} */
+    sum ^= (((RecvStr[i] >> 4) ^ RecvStr[i]) & B00001111);
+  }
+  // ... и преобразовать в '0'..'F'
+  char calc = (sum < 10) ? ('0' + sum) : ('A' + sum - 10);
+  return (RecvStr[12] == calc) ? true : false;
+}
+
