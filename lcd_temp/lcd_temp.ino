@@ -58,91 +58,19 @@ void setup() {
 }
 
 void loop() {
-  // Курсор на первый символ
-  lcd.home();
   // Переменные
   int i;                 // Счетчик
   char RecvChar;         // Полученный байт
   // Serial
   String RecvStr = "";   // Полученная строка
-  // Чтение из порта Serial0
-  if (Serial.available() > 0) {
-    RecvChar = Serial.read();
-    // Проверка на начало последовательности
-    if (RecvChar == '=') {
-      // Вся ли строка в буфере?
-      while (Serial.available() < 14) {
-        delay(10);
-      }
-      if (Serial.available() >= 14) {
-        // Если вся, то читаем всю.
-        for (i = 0; i < 14; i++) {
-          RecvStr += char(Serial.read());
-        }
-        // Выводим последовательность
-        PrintResult(RecvStr, 0, 3);
-      }
-    }
-  }
-  // Чтение из порта Serial1
-  if (Serial1.available() > 0) {
-    RecvChar = Serial1.read();
-    // Проверка на начало последовательности
-    if (RecvChar == '=') {
-      // Вся ли строка в буфере?
-      while (Serial1.available() < 14) {
-        delay(10);
-      }
-      if (Serial1.available() >= 14) {
-        // Если вся, то читаем всю.
-        for (i = 0; i < 14; i++) {
-          RecvStr += char(Serial1.read());
-        }
-        // Выводим последовательность
-        PrintResult(RecvStr, 0, 13);
-      }
-    }
-  }
-
-  // Чтение из порта Serial2
-  if (Serial2.available() > 0) {
-    RecvChar = Serial2.read();
-    // Проверка на начало последовательности
-    if (RecvChar == '=') {
-      // Вся ли строка в буфере?
-      while (Serial2.available() < 14) {
-        delay(10);
-      }
-      if (Serial2.available() >= 14) {
-        // Если вся, то читаем всю.
-        for (i = 0; i < 14; i++) {
-          RecvStr += char(Serial2.read());
-        }
-        // Выводим последовательность
-        PrintResult(RecvStr, 1, 3);
-      }
-    }
-  }
-  // Чтение из порта Serial3
-  if (Serial3.available() > 0) {
-    RecvChar = Serial3.read();
-    // Проверка на начало последовательности
-    if (RecvChar == '=') {
-      // Вся ли строка в буфере?
-      while (Serial3.available() < 14) {
-        delay(10);
-      }
-      if (Serial3.available() >= 14) {
-        // Если вся, то читаем всю.
-        for (i = 0; i < 14; i++) {
-          RecvStr += char(Serial3.read());
-        }
-        // Выводим последовательность
-        PrintResult(RecvStr, 1, 13);
-      }
-    }
-  }
-  // Чтение из порта swSeial
+  // Курсор на первый символ
+  lcd.home();
+  // Чтение из аппаратных портов
+  ReadFromSerial(&Serial, 0, 3);
+  ReadFromSerial(&Serial1, 0, 13);
+  ReadFromSerial(&Serial2, 1, 3);
+  ReadFromSerial(&Serial3, 1, 13);
+  // Чтение из порта swSerial
   if (swSerial.available() > 0) {
     RecvChar = swSerial.read();
     // Проверка на начало последовательности
@@ -161,8 +89,9 @@ void loop() {
       }
     }
   }
-  float readval;            // Температура и давление числом
-  char sreadval[6] = "";    // Температура и давление строкой
+  // Температору и давление
+  float readval;            // Параметр числом
+  char sreadval[6] = "";    // Параметр строкой
   // Чтение и вывод температуры
   readval = bmp.readTemperature();
   dtostrf(readval, 5, 1, sreadval);
@@ -183,11 +112,11 @@ void PrintResult(String Input, int lcdLine, int lcdPos) {
   char  TmpOut[6] = "";  // Температура строкой
   String  StrOut = "";   // Подстрока с температурой
   Input.trim();
-/*
-  // Выделяем e авось пригодится
-  String Eps = "";
-  Eps = Input.substring(5, 7);
-*/
+  /*
+    // Выделяем e авось пригодится
+    String Eps = "";
+    Eps = Input.substring(5, 7);
+  */
   // Выделяем и выводим температуру
   StrOut = Input.substring(7, 11);
   // Курсор на позицию
@@ -216,3 +145,31 @@ void PrintResult(String Input, int lcdLine, int lcdPos) {
       lcd.print(StrOut);
   }
 }
+
+void ReadFromSerial(HardwareSerial *p_Serial, int lcdLine, int lcdPos) {
+  // Переменные
+  int i;                 // Счетчик
+  char RecvChar;         // Полученный байт
+  // Serial
+  String RecvStr = "";   // Полученная строка
+  // Чтение из порта Serial0
+  if (p_Serial->available() > 0) {
+    RecvChar = p_Serial->read();
+    // Проверка на начало последовательности
+    if (RecvChar == '=') {
+      // Вся ли строка в буфере?
+      while (p_Serial->available() < 14) {
+        delay(10);
+      }
+      if (p_Serial->available() >= 14) {
+        // Если вся, то читаем всю.
+        for (i = 0; i < 14; i++) {
+          RecvStr += char(p_Serial->read());
+        }
+        // Выводим последовательность
+        PrintResult(RecvStr, lcdLine, lcdPos);
+      }
+    }
+  }
+}
+
