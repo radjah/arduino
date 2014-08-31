@@ -4,7 +4,7 @@
 #include <LCD.h>
 #include <LiquidCrystal_I2C.h>
 
-// Init LCD
+// Параметры для дисплея
 #define LCD_I2C_ADDR  0x27
 #define BACKLIGHT     3
 #define LCD_EN        2
@@ -15,6 +15,7 @@
 #define LCD_D6        6
 #define LCD_D7        7
 
+// Объект для работы с BMP180
 Adafruit_BMP085 bmp;
 
 // Объект для работы с дисплеем
@@ -39,7 +40,6 @@ void setup() {
   lcd.setBacklightPin(BACKLIGHT, POSITIVE);
   lcd.setBacklight(HIGH);
   lcd.clear();
-  //  lcd.home();
   // Шаблон показаний
   lcd.setCursor(0, 0);
   lcd.print("T1:_____C T2:_____C");
@@ -49,7 +49,7 @@ void setup() {
   lcd.print("T5:_____C");
   lcd.setCursor(0, 3);
   lcd.print("T:_____'C P:_____mm");
-  // Последовательный порт
+  // Последовательные порты
   Serial.begin(9600, SERIAL_8N2);
   Serial1.begin(9600, SERIAL_8N2);
   Serial2.begin(9600, SERIAL_8N2);
@@ -66,7 +66,7 @@ void loop() {
   ReadFromSerial(&Serial2, 1, 3);
   ReadFromSerial(&Serial3, 1, 13);
   ReadFromSerial(&swSerial, 2, 3);
-  // Температору и давление
+  // Температора и давление
   float readval;            // Параметр числом
   char sreadval[6] = "";    // Параметр строкой
   // Чтение и вывод температуры
@@ -84,11 +84,10 @@ void loop() {
 }
 
 // Вывод на экран
-void PrintResult(String Input, int lcdLine, int lcdPos) {
+void PrintResult(const String Input, int lcdLine, int lcdPos) {
   float DigTmp;          // Температура числом
   char  TmpOut[6] = "";  // Температура строкой
   String  StrOut = "";   // Подстрока с температурой
-  Input.trim();
   /*
     // Выделяем e авось пригодится
     String Eps = "";
@@ -126,7 +125,7 @@ void PrintResult(String Input, int lcdLine, int lcdPos) {
 // Чтение строки из порта, обработка, проверка и вывод на экран
 void ReadFromSerial(Stream *p_Serial, int lcdLine, int lcdPos) {
   // Переменные
-  int i, cnt;                 // Счетчик
+  int i, cnt;            // Счетчик
   char RecvChar;         // Полученный байт
   // Serial
   String RecvStr = "";   // Полученная строка
@@ -152,6 +151,7 @@ void ReadFromSerial(Stream *p_Serial, int lcdLine, int lcdPos) {
         StrForCh += RecvStr;
         // Проверка результата и вывод
         if (ChechCRC(StrForCh)) {
+          RecvStr.trim();
           PrintResult(RecvStr, lcdLine, lcdPos);
         }
       }
