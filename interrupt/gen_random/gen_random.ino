@@ -1,4 +1,4 @@
-﻿#include <CyberLib.h>
+#include <CyberLib.h>
 
 void setup() {
   // D13 на ввод. Внешнее управление диодом.
@@ -11,8 +11,8 @@ void setup() {
 void loop() {
   // Случайные импульсы.
   D2_High;
-  delay_ms(random(1,100));
+  delay_ms(random(1,50));
   D2_Low;
-  delay_ms(random(1,100));
+  delay_ms(random(1,50));
 }
 
