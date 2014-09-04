@@ -40,6 +40,7 @@ void setup() {
   lcd.setCursor(0,1);
   lcd.print("Speed: ");
   lcd.home();
+  Serial.begin(9600);
 }
 
 void loop() {
@@ -48,12 +49,15 @@ void loop() {
   char cnt[20] = "";  // Счетчик
   char spd[13] = "";  // Скорость
   // Счетчик в строку
-  sprintf(cnt, "Count: %13u", count);
+  sprintf(cnt, "Count: %13lu", count);
   lcd.print(cnt);
   // Скорость в строку
   dtostrf(speed, 13, 2, spd);
   lcd.setCursor(7,1);
   lcd.print(spd);
+  Serial.print(count);
+  Serial.print("   ");
+  Serial.println(speed);
   // Задержка
   delay_ms(1000);
 }
