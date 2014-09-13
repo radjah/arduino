@@ -33,3 +33,8 @@
 Мои попытки совладать с модулем nRF24L01+
 
 Использована библиотека [RF24](https://github.com/maniacbug/RF24).
+
+## IR_relay ##
+
+Управление двумя реле на цифровых выводах 2 и 3.
+Использована библиотека [Arduino-IRremote](https://github.com/shirriff/Arduino-IRremote).
