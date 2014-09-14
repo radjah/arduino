@@ -1,3 +1,4 @@
+
 #include <CyberLib.h>
 
 /*
@@ -9,10 +10,14 @@
  */
 
 #include <IRremote.h>
-#define R1ON  0x94F37EE4 // Кнопка 1
-#define R1OFF 0x4D91BBBE // Кнопка 2
-#define R2ON  0xF61D79DE // Кнопка 4
-#define R2OFF 0xC7695F20 // Кнопка 5
+#include "carremote.h"
+
+#define R1ON    B_1 // Кнопка 1
+#define R1OFF   B_4 // Кнопка 2
+#define R2ON    B_2 // Кнопка 4
+#define R2OFF   B_5 // Кнопка 5
+#define BOTHON  B_3 // Кнопка 3
+#define BOTHOFF B_6 // Кнопка 6
 
 int RECV_PIN = 11;
 
@@ -42,6 +47,14 @@ void loop() {
         D3_Low;
         break;
       case R2OFF:
+        D3_High;
+        break;
+      case BOTHON:
+        D2_Low;
+        D3_Low;
+        break;
+      case BOTHOFF:
+        D2_High;
         D3_High;
         break;
     }
