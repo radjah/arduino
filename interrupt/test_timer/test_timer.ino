@@ -29,7 +29,7 @@ void setup() {
   // Прерывание по нарастанию
   attachInterrupt(1, D2Int, RISING);
   // Таймер на 4 секунды
-  Timer1.initialize(4000000);
+  Timer1.initialize(1000000);
   Timer1.attachInterrupt(Calcspeed);
   // Запуск дисплея
   lcd.begin(20, 4);
@@ -68,6 +68,6 @@ void D2Int() {
 
 void Calcspeed(){
   // Вычисление скорости
-  speed = float(count - oldcount)/4.0;
+  speed = float(count - oldcount);
   oldcount = count;
 }

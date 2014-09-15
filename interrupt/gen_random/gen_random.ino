@@ -11,8 +11,8 @@ void setup() {
 void loop() {
   // Случайные импульсы.
   D2_High;
-  delay_ms(random(1,50));
+  delay_us(100);
   D2_Low;
-  delay_ms(random(1,50));
+  delay_us(100);
 }
 

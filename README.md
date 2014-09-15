@@ -38,3 +38,7 @@
 
 Управление двумя реле на цифровых выводах 2 и 3.
 Использована библиотека [Arduino-IRremote](https://github.com/shirriff/Arduino-IRremote).
+
+## Dallas_temp ##
+
+Чтение температуры с датчиков DS18B20 и BMP180. Для доступа к датчику DS18B20 использована библиотека [Arduino-Temperature-Control-Library](https://github.com/milesburton/Arduino-Temperature-Control-Library).
