@@ -42,3 +42,7 @@
 ## Dallas_temp ##
 
 Чтение температуры с датчиков DS18B20 и BMP180. Для доступа к датчику DS18B20 использована библиотека [Arduino-Temperature-Control-Library](https://github.com/milesburton/Arduino-Temperature-Control-Library).
+
+## float_bt ##
+
+Пересылка показаний датчика BMP180 с Nano на Uno. Канал организован через два адаптера HC-05.
