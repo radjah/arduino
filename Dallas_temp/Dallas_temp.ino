@@ -5,7 +5,7 @@
 #include <OneWire.h>
 #include <Wire.h>
 #include <Adafruit_BMP085.h>
-
+#include "printf.h"
 /*
 #include <LCD.h>
 #include <LiquidCrystal_I2C.h>
@@ -47,6 +47,7 @@ Adafruit_BMP085         bmp;
 
 void setup() {
   Serial.begin(9600);
+  printf_begin();
   Serial.println("Begin setup");
   bmp.begin();
   /*
@@ -72,10 +73,13 @@ void setup() {
   // Настройка
   radio.setRetries(15, 15);
   radio.setAutoAck(1);
+  radio.setChannel(50);
+  radio.setDataRate(RF24_250KBPS);
   // Пайпы на запись и чтение
   radio.openWritingPipe(pipes[0]);
   radio.openReadingPipe(1, pipes[1]);
   radio.startListening();
+  radio.printDetails();
   Serial.println("Setup finished!");
 }
 
