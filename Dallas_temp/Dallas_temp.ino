@@ -1,3 +1,4 @@
+#include <CyberLib.h>
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
@@ -31,6 +32,7 @@ LiquidCrystal_I2C       lcd(LCD_I2C_ADDR, LCD_EN, LCD_RW, LCD_RS, LCD_D4, LCD_D5
 struct sendtemp {
   float outtemp;
   float intemp;
+  float pres;
 };
 
 // Радио
@@ -46,6 +48,7 @@ DeviceAddress dsaddr;
 Adafruit_BMP085         bmp;
 
 void setup() {
+  D13_In;
   Serial.begin(9600);
   printf_begin();
   Serial.println("Begin setup");
@@ -103,18 +106,17 @@ void loop() {
   st.intemp = tempc;
   Serial.print(" Intemp: ");
   Serial.println(tempc);
+  tempc = bmp.readPressure() / 133.32;
+  st.pres = tempc;
+  Serial.print(" Inpres: ");
+  Serial.println(tempc);
   /*
   lcd.setCursor(6, 2);
   dtostrf(tempC, 14, 2, tempcstr);
   lcd.print(tempcstr);
   */
   radio.stopListening();
-  if (radio.testCarrier())
-    Serial.println("Carrier OK!");
-  else
-    Serial.println("NO CARRIER!");
-  bool ok;
-  ok = radio.write(&st, sizeof(sendtemp));
+  bool ok = radio.write(&st, sizeof(sendtemp));
   if (ok)
     Serial.println("Sended!");
   else

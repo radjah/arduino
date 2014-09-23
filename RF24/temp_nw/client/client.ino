@@ -26,6 +26,7 @@ LiquidCrystal_I2C       lcd(LCD_I2C_ADDR, LCD_EN, LCD_RW, LCD_RS, LCD_D4, LCD_D5
 struct sendtemp {
   float outtemp;
   float intemp;
+  float pres;
 };
 
 // Радио
@@ -47,6 +48,8 @@ void setup() {
   lcd.print("Tout('C):");
   lcd.setCursor(0, 1);
   lcd.print("Tin ('C):");
+  lcd.setCursor(0, 2);
+  lcd.print("Pin (mm):");
   // Включаем радио
   radio.begin();
   // Настройка
@@ -55,8 +58,8 @@ void setup() {
   radio.setChannel(50);
   radio.setDataRate(RF24_250KBPS);
   // Пайпы на запись и чтение
-  // radio.openWritingPipe(pipes[0]);
-  radio.openReadingPipe(1, pipes[1]);
+  radio.openWritingPipe(pipes[1]);
+  radio.openReadingPipe(1, pipes[0]);
   radio.startListening();
   radio.printDetails();
   Serial.println("This is CLIENT");
@@ -75,6 +78,8 @@ void loop() {
       Serial.println(st.outtemp);
       Serial.print("Intemp: ");
       Serial.println(st.intemp);
+      Serial.print("Inpres: ");
+      Serial.println(st.pres);
       // Вывод на дисплей
       char tempcstr[12] = "";
       lcd.setCursor(9, 0);
@@ -82,6 +87,9 @@ void loop() {
       lcd.print(tempcstr);
       lcd.setCursor(9, 1);
       dtostrf(st.intemp, 11, 2, tempcstr);
+      lcd.print(tempcstr);
+      lcd.setCursor(9, 2);
+      dtostrf(st.pres, 11, 2, tempcstr);
       lcd.print(tempcstr);
       delay(20);
     };
