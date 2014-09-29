@@ -27,6 +27,7 @@ struct sendtemp {
   float outtemp;
   float intemp;
   float pres;
+  float hum;
 };
 
 // Радио
@@ -50,6 +51,8 @@ void setup() {
   lcd.print("Tin ('C):");
   lcd.setCursor(0, 2);
   lcd.print("Pin (mm):");
+  lcd.setCursor(0, 3);
+  lcd.print("Hum  (%):");
   // Включаем радио
   radio.begin();
   // Настройка
@@ -80,6 +83,8 @@ void loop() {
       Serial.println(st.intemp);
       Serial.print("Inpres: ");
       Serial.println(st.pres);
+      Serial.print("Inhum: ");
+      Serial.println(st.hum);
       // Вывод на дисплей
       char tempcstr[12] = "";
       lcd.setCursor(9, 0);
@@ -90,6 +95,9 @@ void loop() {
       lcd.print(tempcstr);
       lcd.setCursor(9, 2);
       dtostrf(st.pres, 11, 2, tempcstr);
+      lcd.print(tempcstr);
+      lcd.setCursor(9, 3);
+      dtostrf(st.hum, 11, 2, tempcstr);
       lcd.print(tempcstr);
       delay(20);
     };

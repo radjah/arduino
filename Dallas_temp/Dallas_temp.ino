@@ -4,6 +4,7 @@
 #include <RF24.h>
 #include <DallasTemperature.h>
 #include <OneWire.h>
+#include <DHT.h>
 #include <Wire.h>
 #include <Adafruit_BMP085.h>
 #include "printf.h"
@@ -15,6 +16,7 @@ struct sendtemp {
   float outtemp;
   float intemp;
   float pres;
+  float hum;
 };
 
 // Радио
@@ -27,14 +29,15 @@ const uint64_t pipes[2] = { 0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL };
 OneWire dswire(2);
 DallasTemperature sensors(&dswire);
 DeviceAddress dsaddr;
-Adafruit_BMP085         bmp;
+Adafruit_BMP085        bmp;
+DHT                    dht(3, 11);
 
 void setup() {
-  D13_In;
   Serial.begin(9600);
   printf_begin();
   Serial.println("Begin setup");
   bmp.begin();
+  dht.begin();
   sensors.getAddress(dsaddr, 0);
   sensors.setResolution(dsaddr, 12);
   radio.begin();
@@ -67,6 +70,10 @@ void loop() {
   st.pres = tempc;
   Serial.print(" Inpres: ");
   Serial.println(tempc);
+  tempc = dht.readHumidity();
+  st.hum = tempc;
+  Serial.print(" Hum: ");
+  Serial.println(tempc);
   radio.stopListening();
   bool ok = radio.write(&st, sizeof(sendtemp));
   if (ok)
@@ -74,6 +81,6 @@ void loop() {
   else
     Serial.println("ERROR: not sended!");
   radio.startListening();
-  delay_ms(100);
+  delay_ms(500);
 }
 
