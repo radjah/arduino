@@ -5,6 +5,7 @@
 #include <Wire.h>
 #include <LCD.h>
 #include <LiquidCrystal_I2C.h>
+#include <RTClib.h>
 
 // Порты LCD
 #define LCD_I2C_ADDR    0x27 // Define I2C Address where the PCF8574T is
@@ -20,8 +21,8 @@
 LiquidCrystal_I2C       lcd(LCD_I2C_ADDR, LCD_EN, LCD_RW, LCD_RS, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
 
-#define CSNPIN 53
-#define CEPIN 49
+#define CSNPIN 10
+#define CEPIN 9
 
 struct sendtemp {
   float outtemp;
@@ -32,6 +33,9 @@ struct sendtemp {
 
 // Радио
 RF24 radio(CEPIN, CSNPIN);
+
+// Часы DS1307
+RTC_DS1307 rtc;
 
 // Пайпы
 const uint64_t pipes[2] = { 0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL };
@@ -45,10 +49,8 @@ void setup() {
   lcd.setBacklight(HIGH);
   lcd.clear();
   lcd.home();
-  lcd.setCursor(0, 0);
-  lcd.print("Tout('C):");
   lcd.setCursor(0, 1);
-  lcd.print("Tin ('C):");
+  lcd.print("To/i('C):");
   lcd.setCursor(0, 2);
   lcd.print("Pin (mm):");
   lcd.setCursor(0, 3);
@@ -65,6 +67,8 @@ void setup() {
   radio.openReadingPipe(1, pipes[0]);
   radio.startListening();
   radio.printDetails();
+  Wire.begin();
+  rtc.begin();
   Serial.println("This is CLIENT");
 }
 
@@ -76,7 +80,18 @@ void loop() {
     while (!done)
     {
       done = radio.read( &st, sizeof(sendtemp) );
+      DateTime now = rtc.now();
+      DateTime MSK (now + 4 * 3600);
+      char dt[18] = "";
+      sprintf(dt, "%02d/%02d/%02d %02d:%02d:%02d", MSK.year(),
+                                                   MSK.month(),
+                                                   MSK.day(),
+                                                   MSK.hour(),
+                                                   MSK.minute(),
+                                                   MSK.second());
       Serial.println("Recived!");
+      Serial.print("Time: ");
+      Serial.println(dt);
       Serial.print("Outtemp: ");
       Serial.println(st.outtemp);
       Serial.print("Intemp: ");
@@ -86,13 +101,16 @@ void loop() {
       Serial.print("Inhum: ");
       Serial.println(st.hum);
       // Вывод на дисплей
+      lcd.setCursor(0, 0);
+      lcd.print(dt);
       char tempcstr[12] = "";
-      lcd.setCursor(9, 0);
-      dtostrf(st.outtemp, 11, 2, tempcstr);
-      lcd.print(tempcstr);
+      char tempstr[6] = "";
       lcd.setCursor(9, 1);
-      dtostrf(st.intemp, 11, 2, tempcstr);
-      lcd.print(tempcstr);
+      dtostrf(st.outtemp, 5, 2, tempstr);
+      lcd.print(tempstr);
+      lcd.print("/");
+      dtostrf(st.intemp, 5, 2, tempstr);
+      lcd.print(tempstr);
       lcd.setCursor(9, 2);
       dtostrf(st.pres, 11, 2, tempcstr);
       lcd.print(tempcstr);

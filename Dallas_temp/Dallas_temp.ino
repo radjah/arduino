@@ -25,12 +25,16 @@ RF24 radio(CEPIN, CSNPIN);
 // Пайпы
 const uint64_t pipes[2] = { 0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL };
 
-
+// Температура за бортом DS18B20
 OneWire dswire(2);
 DallasTemperature sensors(&dswire);
 DeviceAddress dsaddr;
+
+// Давление и температура на борту BMP180
 Adafruit_BMP085        bmp;
-DHT                    dht(3, 11);
+
+// Влажность DHT22
+DHT                    dht(3, 22);
 
 void setup() {
   Serial.begin(9600);
@@ -81,6 +85,6 @@ void loop() {
   else
     Serial.println("ERROR: not sended!");
   radio.startListening();
-  delay_ms(500);
+  delay_ms(2000);
 }
 

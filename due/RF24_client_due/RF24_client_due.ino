@@ -1,7 +1,6 @@
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
-//#include "printf.h"
 #include <Wire.h>
 #include <LCD.h>
 #include <LiquidCrystal_I2C.h>
@@ -37,7 +36,6 @@ const uint64_t pipes[2] = { 0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL };
 
 void setup() {
   Serial.begin(9600);
-  //printf_begin();
   // Включаем дисплей
   lcd.begin(20, 4);
   lcd.setBacklightPin(BACKLIGHT, POSITIVE);
@@ -61,7 +59,6 @@ void setup() {
   radio.openWritingPipe(pipes[1]);
   radio.openReadingPipe(1, pipes[0]);
   radio.startListening();
-  //radio.printDetails();
   Serial.println("This is CLIENT");
 }
 
