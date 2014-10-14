@@ -47,6 +47,10 @@
 
 Пересылка показаний датчика BMP180 с Nano на Uno. Канал организован через два адаптера HC-05.
 
+## oled ##
+
+Проба дисплея 128x64 точек на контроллере SSD1306. Использовались библиотеки [Adafruit-GFX-Library](https://github.com/adafruit/Adafruit-GFX-Library) и [Adafruit_SSD1306](https://github.com/adafruit/Adafruit_SSD1306).
+
 ## due ##
 
 Попытки перенести старые скетчи на Due.
