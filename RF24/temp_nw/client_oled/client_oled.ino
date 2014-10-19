@@ -29,6 +29,7 @@ RTC_DS1307 rtc;
 const uint64_t pipes[2] = { 0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL };
 
 void setup() {
+  Wire.begin();
   display.begin();
   display.clearDisplay();
   display.setTextSize(1);
@@ -50,8 +51,7 @@ void setup() {
   radio.openReadingPipe(1, pipes[0]);
   radio.startListening();
   radio.printDetails();
-  //Wire.begin();
-  //rtc.begin();
+  rtc.begin();
   Serial.println("This is CLIENT");
   Serial.println("Waiting...");
 }
