@@ -81,7 +81,7 @@ void loop() {
     {
       done = radio.read( &st, sizeof(sendtemp) );
       DateTime now = rtc.now();
-      DateTime MSK (now + 4 * 3600);
+      DateTime MSK (now + 3 * 3600);
       char dt[18] = "";
       sprintf(dt, "%02d/%02d/%02d %02d:%02d:%02d", MSK.year(),
                                                    MSK.month(),
