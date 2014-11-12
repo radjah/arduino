@@ -43,6 +43,8 @@
 
 Чтение температуры с датчиков DS18B20 и BMP180. Для доступа к датчику DS18B20 использована библиотека [Arduino-Temperature-Control-Library](https://github.com/milesburton/Arduino-Temperature-Control-Library).
 
+Для работы с шиной 1wire использована библиотека [OneWire](http://www.pjrc.com/teensy/td_libs_OneWire.html).
+
 ## float_bt ##
 
 Пересылка показаний датчика BMP180 с Nano на Uno. Канал организован через два адаптера HC-05.
