@@ -56,3 +56,7 @@
 ## due ##
 
 Попытки перенести старые скетчи на Due.
+
+## ReadSHT2x ##
+
+Пример для чтения значений температуры и влажности с датчика SHT21. Использовалась библиотека [SHT2x-Arduino-Library](https://github.com/misenso/SHT2x-Arduino-Library).
