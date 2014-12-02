@@ -1,4 +1,3 @@
-#include <CyberLib.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <Wire.h>
@@ -10,7 +9,6 @@
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
-#include <SD.h>
 
 // Порты LCD
 #define LCD_I2C_ADDR    0x27 // Define I2C Address where the PCF8574T is
@@ -25,11 +23,6 @@
 
 #define CSNPIN 10
 #define CEPIN 9
-
-#define CARDPIN 8
-
-File logfile;        // Файл лога
-bool isSD = true;    // Флаг присутствия карты
 
 struct sendtemp {
   uint32_t dt;       // Время unixtime
@@ -72,7 +65,6 @@ void setup()
   bmp.begin();
   // Радио
   radio.begin();
-  digitalWrite(CARDPIN, HIGH);
   // Настройка
   radio.setRetries(15, 15);
   radio.setAutoAck(1);
@@ -82,11 +74,6 @@ void setup()
   radio.openWritingPipe(pipes[0]);
   radio.openReadingPipe(1, pipes[1]);
   radio.startListening();
-  // Подключение карты
-  if (!SD.begin(CARDPIN)) {
-    isSD = false;
-    Serial.println("SD not found!");
-  }
   // Шаблон на дисплее
   lcd.begin(20, 4);
   lcd.setBacklightPin(BACKLIGHT, POSITIVE);
@@ -147,27 +134,6 @@ void loop()
   st.pres = bmp.readPressure() / 133.32;
   dtostrf(st.pres, 14, 2, prnt);
   lcd.print(prnt);
-  if (isSD) {
-    digitalWrite(CSNPIN, HIGH);
-    Serial.print("Writing...");
-    char filename[13] = "";
-    char mestime[10] = "";
-    sprintf(filename, "%04d%02d%02d.txt", MSK.year(), MSK.month(), MSK.day());
-    sprintf(mestime, "%02d:%02d:%02d", MSK.hour(), MSK.minute(), MSK.second());
-    logfile = SD.open(filename, FILE_WRITE);
-    logfile.print(mestime);
-    logfile.print(" ");
-    logfile.print(st.outtemp);
-    logfile.print(" ");
-    logfile.print(st.intemp);
-    logfile.print(" ");
-    logfile.print(st.pres);
-    logfile.print(" ");
-    logfile.println(st.hum);
-    logfile.close();
-    digitalWrite(CARDPIN, HIGH);
-    Serial.println("OK!");
-  }
   // Отправляем
   radio.stopListening();
   bool ok = radio.write(&st, sizeof(sendtemp));
@@ -177,6 +143,6 @@ void loop()
     Serial.println("ERROR: not sended!");
   radio.startListening();
   // Задержка
-  delay_ms(1000);
+  delay(1000);
 }
 
