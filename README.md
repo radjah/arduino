@@ -60,3 +60,11 @@
 ## ReadSHT2x ##
 
 Пример для чтения значений с датчика SHT21. Использовалась библиотека [SHT2x-Arduino-Library](https://github.com/misenso/SHT2x-Arduino-Library).
+
+## ReadSHT2x_nosd ##
+
+Предыдущий пример без записи протокола на SD-карту.
+
+## ReadSHT2x\_nosd\_nolcd ##
+
+Тоже самое, но еще и без вывода на дисплей.
