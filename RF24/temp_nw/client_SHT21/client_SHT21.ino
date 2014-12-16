@@ -1,3 +1,6 @@
+// Arduini Mega as CLIENT
+
+#include <CyberLib.h>
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
@@ -6,6 +9,7 @@
 #include <LCD.h>
 #include <LiquidCrystal_I2C.h>
 #include <RTClib.h>
+#include <SD.h>
 
 // Порты LCD
 #define LCD_I2C_ADDR    0x27 // Define I2C Address where the PCF8574T is
@@ -20,9 +24,9 @@
 
 LiquidCrystal_I2C       lcd(LCD_I2C_ADDR, LCD_EN, LCD_RW, LCD_RS, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
-
-#define CSNPIN 10
-#define CEPIN 9
+// Пины радио
+#define CSNPIN 45
+#define CEPIN 47
 
 struct sendtemp {
   uint32_t dt;       // Время unixtime
@@ -31,6 +35,12 @@ struct sendtemp {
   float    pres;     // Давление
   float    hum;      // Влажность относительная
 };
+
+// Карта памяти
+File logfile;        // Файл лога
+bool isSD = true;    // Флаг присутствия карты
+
+#define SDCS 44      // CS SD-карты
 
 // Радио
 RF24 radio(CEPIN, CSNPIN);
@@ -41,6 +51,14 @@ const uint64_t pipes[2] = { 0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL };
 void setup() {
   Serial.begin(9600);
   printf_begin();
+  // Отключаем SS
+  D53_Out;
+  // Включаем карту
+  // Если адаптер завелся
+  if (!SD.begin(SDCS)) {
+    isSD = false;
+    Serial.println("SD not found!");
+  }
   // Включаем дисплей
   lcd.begin(20, 4);
   lcd.setBacklightPin(BACKLIGHT, POSITIVE);
