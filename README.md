@@ -72,3 +72,7 @@
 ## bin_counter ##
 
 Тупой бинарный счет для 7-ми сегментного индикатора на 8 знакомест с MAX7219. Использовалась библиотека [LedControl](https://www.pjrc.com/teensy/td_libs_LedControl.html).
+
+## _8digwatch ##
+
+Цифровые часы на основе MAX7219 и DS1307.
