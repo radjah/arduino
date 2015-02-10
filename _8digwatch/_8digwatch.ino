@@ -1,3 +1,4 @@
+#include <CyberLib.h>
 #include <Wire.h>
 #include <LedControl.h>
 #include <RTClib.h>
@@ -15,8 +16,11 @@ void setup() {
 #ifdef SETTIME
   rtc.adjust(DateTime(__DATE__, __TIME__) - TimeSpan(TIMESPAN * 3600));
 #endif
+  D13_In;
+  D13_Low;
+  rtc.writeSqwPinMode(SquareWave1HZ);
   mydisplay.shutdown(0, false);  // turns on display
-  mydisplay.setIntensity(0, 15); // 15 = brightest
+  mydisplay.setIntensity(0, 5); // 15 = brightest
 }
 
 void loop() {
@@ -24,7 +28,7 @@ void loop() {
   print2dig (MSK.hour(), 5, 4, true);
   print2dig (MSK.minute(), 3, 2, true);
   print2dig (MSK.second(), 1, 0, false);
-  delay(100);
+  delay_ms(100);
 
 }
 

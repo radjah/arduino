@@ -25,8 +25,14 @@
 LiquidCrystal_I2C       lcd(LCD_I2C_ADDR, LCD_EN, LCD_RW, LCD_RS, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
 // Пины радио
+#if  defined (__AVR_ATmega2560__) || defined (__AVR_ATmega2561__)
 #define CSNPIN 45
 #define CEPIN 47
+#else
+#define CSNPIN 10
+#define CEPIN 9
+#endif
+
 
 struct sendtemp {
   uint32_t dt;       // Время unixtime
@@ -36,11 +42,13 @@ struct sendtemp {
   float    hum;      // Влажность относительная
 };
 
+/*
 // Карта памяти
 File logfile;        // Файл лога
 bool isSD = true;    // Флаг присутствия карты
 
 #define SDCS 44      // CS SD-карты
+*/
 
 // Радио
 RF24 radio(CEPIN, CSNPIN);
@@ -52,13 +60,15 @@ void setup() {
   Serial.begin(9600);
   printf_begin();
   // Отключаем SS
-  D53_Out;
+  //D53_Out;
   // Включаем карту
   // Если адаптер завелся
-  if (!SD.begin(SDCS)) {
-    isSD = false;
-    Serial.println("SD not found!");
-  }
+  /*
+      if (!SD.begin(SDCS)) {
+      isSD = false;
+      Serial.println("SD not found!");
+    }
+  */
   // Включаем дисплей
   lcd.begin(20, 4);
   lcd.setBacklightPin(BACKLIGHT, POSITIVE);
@@ -125,8 +135,12 @@ void loop() {
       dtostrf(st.intemp, 6, 2, tmpc);
       lcd.print(tmpc);
       lcd.print("/");
-      dtostrf(st.outtemp, 6, 2, tmpc);
-      lcd.print(tmpc);
+      if (st.outtemp == -127.0) {
+        lcd.print("ERROR!");
+      } else {
+        dtostrf(st.outtemp, 6, 2, tmpc);
+        lcd.print(tmpc);
+      }
       // Вывод относительной влажности
       lcd.setCursor(6, 2);
       dtostrf(st.hum, 14, 2, prnt);
