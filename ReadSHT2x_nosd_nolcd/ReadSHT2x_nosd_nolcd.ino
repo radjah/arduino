@@ -8,6 +8,9 @@
 #include <nRF24L01.h>
 #include <RF24.h>
 
+#define TIMESPAN 3
+//#define SETTIME
+
 #define CSNPIN 10
 #define CEPIN 9
 
@@ -43,6 +46,10 @@ void setup()
   Wire.begin();
   // Часы
   rtc.begin();
+#ifdef SETTIME
+  // 15 - примерное время прошивки в секундах
+  rtc.adjust(DateTime(__DATE__, __TIME__) - TimeSpan(TIMESPAN * 3600 - 15));
+#endif
   // Dallas
   sensors.getAddress(dsaddr, 0);
   sensors.setResolution(dsaddr, 12);
