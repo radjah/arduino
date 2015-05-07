@@ -14,7 +14,7 @@ void setup() {
   // Часы
   rtc.begin();
 #ifdef SETTIME
-  rtc.adjust(DateTime(__DATE__, __TIME__) - TimeSpan(TIMESPAN * 3600));
+  rtc.adjust(DateTime(__DATE__, __TIME__) - TimeSpan(TIMESPAN * 3600)+5);
 #endif
   D13_In;
   D13_Low;
