@@ -9,7 +9,7 @@
 #include <LCD.h>
 #include <LiquidCrystal_I2C.h>
 #include <RTClib.h>
-#include <SD.h>
+#include <SdFat.h>
 
 // Порты LCD
 #define LCD1_I2C_ADDR    0x27
@@ -46,6 +46,9 @@ struct sendtemp {
 
 
 // Карта памяти
+
+SdFat SD;
+
 //File logfile;        // Файл лога
 bool isSD = true;    // Флаг присутствия карты
 
@@ -67,10 +70,6 @@ void setup() {
   D53_Out;
   // Отключить Ethernet
   D10_High;
-  // Выключить RF24
-  D49_High;
-  // Включить SD-карту
-  D4_Low;
   // Включаем дисплей
   lcd1.begin(20, 4);
   lcd1.setBacklightPin(BACKLIGHT, POSITIVE);
@@ -96,23 +95,7 @@ void setup() {
   lcd2.print("Log:------------");
   printf_begin();
   // Включаем карту
-  // Если адаптер завелся
-  if (!SD.begin(SDCS)) {
-    isSD = false;
-    Serial.println("SD not found!");
-    lcd2.setCursor(3, 0);
-    lcd2.print("ERR");
-  } else {
-    isSD = true;
-    Serial.println("SD found!");
-    lcd2.setCursor(3, 0);
-    lcd2.print("OK ");
-  }
-  Serial.println(isSD);
-  // Выключить SD-карту
-  D4_High;
-  // Включить RF24
-  D49_Low;
+  CheckSD();
   // Включаем радио
   radio.begin();
   // Настройка
@@ -217,14 +200,41 @@ void loop() {
         } else {
           lcd2.setCursor(13, 0);
           lcd2.print("ERR");
+          isSD = false;
         }
         // Выключить SD-карту
         D4_High;
         // Включить RF24
         D49_Low;
+      } else {
+        CheckSD();
       }
     }
     delay(20);
   };
 };
 
+// Проверка карты памяти
+void CheckSD() {
+  // Выключить RF24
+  D49_High;
+  // Включить SD-карту
+  D4_Low;
+  // Если адаптер завелся
+  if (!SD.begin(SDCS)) {
+    isSD = false;
+    Serial.println("SD not found!");
+    lcd2.setCursor(3, 0);
+    lcd2.print("ERR");
+  } else {
+    isSD = true;
+    Serial.println("SD found!");
+    lcd2.setCursor(3, 0);
+    lcd2.print("OK ");
+  }
+  Serial.println(isSD);
+  // Выключить SD-карту
+  D4_High;
+  // Включить RF24
+  D49_Low;
+}
