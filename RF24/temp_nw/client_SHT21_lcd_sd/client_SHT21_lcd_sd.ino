@@ -12,7 +12,8 @@
 #include <SD.h>
 
 // Порты LCD
-#define LCD_I2C_ADDR    0x27 // Define I2C Address where the PCF8574T is
+#define LCD1_I2C_ADDR    0x27
+#define LCD2_I2C_ADDR    0x23
 #define BACKLIGHT     3
 #define LCD_EN  2
 #define LCD_RW  1
@@ -22,7 +23,8 @@
 #define LCD_D6  6
 #define LCD_D7  7
 
-LiquidCrystal_I2C       lcd(LCD_I2C_ADDR, LCD_EN, LCD_RW, LCD_RS, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
+LiquidCrystal_I2C      lcd1(LCD1_I2C_ADDR, LCD_EN, LCD_RW, LCD_RS, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
+LiquidCrystal_I2C      lcd2(LCD2_I2C_ADDR, LCD_EN, LCD_RW, LCD_RS, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
 // Пины радио
 #if  defined (__AVR_ATmega2560__) || defined (__AVR_ATmega2561__)
@@ -69,15 +71,42 @@ void setup() {
   D49_High;
   // Включить SD-карту
   D4_Low;
+  // Включаем дисплей
+  lcd1.begin(20, 4);
+  lcd1.setBacklightPin(BACKLIGHT, POSITIVE);
+  lcd1.setBacklight(HIGH);
+  lcd1.clear();
+  lcd1.home();
+  lcd1.setCursor(0, 1);
+  lcd1.print("T('C):");
+  lcd1.setCursor(0, 2);
+  lcd1.print("H (%):");
+  lcd1.setCursor(0, 3);
+  lcd1.print("P(Hg):");
+  lcd2.begin(20, 4);
+  lcd2.setBacklightPin(BACKLIGHT, POSITIVE);
+  lcd2.setBacklight(HIGH);
+  lcd2.clear();
+  lcd2.home();
+  lcd2.setCursor(0, 0);
+  lcd2.print("SD:--");
+  lcd2.setCursor(8, 0);
+  lcd2.print("L Wr:--");
+  lcd2.setCursor(0, 1);
+  lcd2.print("Log:------------");
   printf_begin();
   // Включаем карту
   // Если адаптер завелся
   if (!SD.begin(SDCS)) {
     isSD = false;
     Serial.println("SD not found!");
+    lcd2.setCursor(3, 0);
+    lcd2.print("ERR");
   } else {
     isSD = true;
     Serial.println("SD found!");
+    lcd2.setCursor(3, 0);
+    lcd2.print("OK ");
   }
   Serial.println(isSD);
   // Выключить SD-карту
@@ -97,18 +126,6 @@ void setup() {
   radio.startListening();
   radio.printDetails();
   Serial.println("This is CLIENT");
-  // Включаем дисплей
-  lcd.begin(20, 4);
-  lcd.setBacklightPin(BACKLIGHT, POSITIVE);
-  lcd.setBacklight(HIGH);
-  lcd.clear();
-  lcd.home();
-  lcd.setCursor(0, 1);
-  lcd.print("T('C):");
-  lcd.setCursor(0, 2);
-  lcd.print("H (%):");
-  lcd.setCursor(0, 3);
-  lcd.print("P(Hg):");
 }
 
 void loop() {
@@ -141,31 +158,31 @@ void loop() {
       Serial.print("Inhum: ");
       Serial.println(st.hum);
       // Вывод на дисплей
-      lcd.setCursor(0, 0);
-      lcd.print(dt);
+      lcd1.setCursor(0, 0);
+      lcd1.print(dt);
       // Под температуру
       char tmpc[7] = "";
       // Под всё остальное
       char prnt[15] = "";
       // Вывод температуры внутри и снаружи.
-      lcd.setCursor(7, 1);
+      lcd1.setCursor(7, 1);
       dtostrf(st.intemp, 6, 2, tmpc);
-      lcd.print(tmpc);
-      lcd.print("/");
+      lcd1.print(tmpc);
+      lcd1.print("/");
       if (st.outtemp == -127.0) {
-        lcd.print("ERROR!");
+        lcd1.print("ERROR!");
       } else {
         dtostrf(st.outtemp, 6, 2, tmpc);
-        lcd.print(tmpc);
+        lcd1.print(tmpc);
       }
       // Вывод относительной влажности
-      lcd.setCursor(6, 2);
+      lcd1.setCursor(6, 2);
       dtostrf(st.hum, 14, 2, prnt);
-      lcd.print(prnt);
+      lcd1.print(prnt);
       // Вывод давления
-      lcd.setCursor(6, 3);
+      lcd1.setCursor(6, 3);
       dtostrf(st.pres, 14, 2, prnt);
-      lcd.print(prnt);
+      lcd1.print(prnt);
       // Запись на карту памяти
       if (isSD == true) {
         Serial.println("Writing...");
@@ -178,6 +195,8 @@ void loop() {
         sprintf(fn, "%04d%02d%02d.txt", MSK.year(),
                 MSK.month(),
                 MSK.day());
+        lcd2.setCursor(4, 1);
+        lcd2.print(fn);
         File logfile = SD.open(fn, FILE_WRITE);
         Serial.println(logfile);
         if (logfile == true) {
@@ -193,6 +212,11 @@ void loop() {
           logfile.close();
           // print to the serial port too:
           Serial.println("Log OK!");
+          lcd2.setCursor(13, 0);
+          lcd2.print("OK ");
+        } else {
+          lcd2.setCursor(13, 0);
+          lcd2.print("ERR");
         }
         // Выключить SD-карту
         D4_High;
