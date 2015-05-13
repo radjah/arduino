@@ -171,7 +171,7 @@ void loop() {
       lcd1.print(prnt);
       // Запись на карту памяти
       if (isSD == true) {
-        Serial.println("Writing...");
+        Serial.print("Writing...");
         // Выключить RF24
         D49_High;
         // Включить SD-карту
@@ -184,7 +184,6 @@ void loop() {
         lcd2.setCursor(4, 1);
         lcd2.print(fn);
         File logfile = SD.open(fn, FILE_WRITE);
-        Serial.println(logfile);
         if (logfile == true) {
           logfile.print(dt);
           logfile.print(" ");
@@ -197,11 +196,12 @@ void loop() {
           logfile.println(st.hum);
           logfile.close();
           // print to the serial port too:
-          Serial.println("Log OK!");
+          Serial.println("OK!");
           lcd2.setCursor(13, 0);
           lcd2.print("OK ");
         } else {
           // При ошибке записи запускаем отсчет
+          Serial.println("ERR!");
           lcd2.setCursor(13, 0);
           lcd2.print("ERR");
           isSD = false;
@@ -248,7 +248,6 @@ void CheckSD() {
       tr--;
     }
   }
-  Serial.println(isSD);
   // Выключить SD-карту
   D4_High;
   // Включить RF24
