@@ -50,7 +50,7 @@ struct sendtemp {
 SdFat SD;
 
 //File logfile;        // Файл лога
-bool isSD = true;    // Флаг присутствия карты
+bool isSD = false;     // Флаг присутствия карты
 
 #define SDCS 4      // CS SD-карты
 
@@ -60,6 +60,9 @@ RF24 radio(CEPIN, CSNPIN);
 
 // Пайпы
 const uint64_t pipes[2] = { 0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL };
+
+// Попытки
+byte tr = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -89,8 +92,8 @@ void setup() {
   lcd2.home();
   lcd2.setCursor(0, 0);
   lcd2.print("SD:--");
-  lcd2.setCursor(8, 0);
-  lcd2.print("L Wr:--");
+  lcd2.setCursor(10, 0);
+  lcd2.print("Wr:--");
   lcd2.setCursor(0, 1);
   lcd2.print("Log:------------");
   printf_begin();
@@ -198,6 +201,7 @@ void loop() {
           lcd2.setCursor(13, 0);
           lcd2.print("OK ");
         } else {
+          // При ошибке записи запускаем отсчет
           lcd2.setCursor(13, 0);
           lcd2.print("ERR");
           isSD = false;
@@ -220,17 +224,29 @@ void CheckSD() {
   D49_High;
   // Включить SD-карту
   D4_Low;
-  // Если адаптер завелся
-  if (!SD.begin(SDCS)) {
-    isSD = false;
-    Serial.println("SD not found!");
-    lcd2.setCursor(3, 0);
-    lcd2.print("ERR");
-  } else {
-    isSD = true;
-    Serial.println("SD found!");
-    lcd2.setCursor(3, 0);
-    lcd2.print("OK ");
+  // Позиция вывода
+  lcd2.setCursor(3, 0);
+  // Если ошибка карты
+  if (isSD == false) {
+    // Если счетчик досчитал
+    if (tr < 1) {
+      lcd2.print("Init");
+      lcd2.setCursor(3, 0);
+      if (!SD.begin(SDCS)) {
+        isSD = false;
+        Serial.println("SD not found!");
+        lcd2.print("ERR ");
+        tr = 5;
+      } else {
+        isSD = true;
+        Serial.println("SD found!");
+        lcd2.print("OK  ");
+      }
+    } else {
+      lcd2.print(tr);
+      lcd2.print("   ");
+      tr--;
+    }
   }
   Serial.println(isSD);
   // Выключить SD-карту
