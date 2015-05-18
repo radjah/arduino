@@ -7,6 +7,11 @@
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
+#include <DHT.h>
+
+// Датчик висит на D6
+#define DHTPIN 6
+#define DHTTYPE DHT22
 
 #define TIMESPAN 3
 //#define SETTIME
@@ -19,11 +24,15 @@ struct sendtemp {
   float    outtemp;  // Температура на улице
   float    intemp;   // Температура внутри
   float    pres;     // Давление
-  float    hum;      // Влажность относительная
+  float    humin;    // Влажность относительная
+  float    humout;   // Влажность относительная
 };
 
 // Радио
 RF24 radio(CEPIN, CSNPIN);
+
+// Влажность на улице
+DHT dht(DHTPIN, DHTTYPE);
 
 // Пайпы
 const uint64_t pipes[2] = { 0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL };
@@ -55,6 +64,8 @@ void setup()
   sensors.setResolution(dsaddr, 12);
   // BMP
   bmp.begin();
+  // DHT
+  dht.begin();
   // Радио
   radio.begin();
   // Настройка
@@ -81,8 +92,9 @@ void loop()
   sensors.requestTemperatures();
   st.intemp = bmp.readTemperature();
   st.outtemp = sensors.getTempC(dsaddr);
-  st.hum = SHT2x.GetHumidity();
+  st.humin = SHT2x.GetHumidity();
   st.pres = bmp.readPressure() / 133.32;
+  st.humout = dht.readHumidity();
   // Отправляем
   radio.stopListening();
   bool ok = radio.write(&st, sizeof(sendtemp));
@@ -92,6 +104,6 @@ void loop()
     Serial.println("ERROR: not sended!");
   radio.startListening();
   // Задержка
-  delay(1000);
+  delay(1500);
 }
 

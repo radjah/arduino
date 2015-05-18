@@ -41,7 +41,8 @@ struct sendtemp {
   float    outtemp;  // Температура на улице
   float    intemp;   // Температура внутри
   float    pres;     // Давление
-  float    hum;      // Влажность относительная
+  float    humin;    // Влажность относительная
+  float    humout;   // Влажность относительная
 };
 
 
@@ -142,7 +143,9 @@ void loop() {
       Serial.print("Inpres: ");
       Serial.println(st.pres);
       Serial.print("Inhum: ");
-      Serial.println(st.hum);
+      Serial.println(st.humin);
+      Serial.print("Outhum: ");
+      Serial.println(st.humout);
       // Вывод на дисплей
       lcd1.setCursor(0, 0);
       lcd1.print(dt);
@@ -162,9 +165,15 @@ void loop() {
         lcd1.print(tmpc);
       }
       // Вывод относительной влажности
-      lcd1.setCursor(6, 2);
-      dtostrf(st.hum, 14, 2, prnt);
-      lcd1.print(prnt);
+      //lcd1.setCursor(6, 2);
+      //dtostrf(st.hum, 14, 2, prnt);
+      //lcd1.print(prnt);
+      lcd1.setCursor(7, 2);
+      dtostrf(st.humin, 6, 2, tmpc);
+      lcd1.print(tmpc);
+      lcd1.print("/");
+      dtostrf(st.humout, 6, 2, tmpc);
+      lcd1.print(tmpc);
       // Вывод давления
       lcd1.setCursor(6, 3);
       dtostrf(st.pres, 14, 2, prnt);
@@ -193,12 +202,14 @@ void loop() {
           logfile.print(" ");
           logfile.print(st.pres);
           logfile.print(" ");
-          logfile.println(st.hum);
+          logfile.print(st.humin);
+          logfile.print(" ");
+          logfile.println(st.humout);
           logfile.close();
           // print to the serial port too:
           Serial.println("OK!");
           lcd2.setCursor(13, 0);
-          lcd2.print("OK ");
+          lcd2.print("OK  ");
         } else {
           // При ошибке записи запускаем отсчет
           Serial.println("ERR!");
