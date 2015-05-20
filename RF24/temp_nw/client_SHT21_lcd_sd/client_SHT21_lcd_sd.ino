@@ -194,22 +194,30 @@ void loop() {
         lcd2.print(fn);
         File logfile = SD.open(fn, FILE_WRITE);
         if (logfile == true) {
-          logfile.print(dt);
-          logfile.print(" ");
-          logfile.print(st.outtemp);
-          logfile.print(" ");
-          logfile.print(st.intemp);
-          logfile.print(" ");
-          logfile.print(st.pres);
-          logfile.print(" ");
-          logfile.print(st.humin);
-          logfile.print(" ");
-          logfile.println(st.humout);
-          logfile.close();
-          // print to the serial port too:
-          Serial.println("OK!");
-          lcd2.setCursor(13, 0);
-          lcd2.print("OK  ");
+          // Валидация полученных данных
+          if (!(st.outtemp == 85.0) & !(st.outtemp == -127) & !(isnan(st.humout))) {
+            logfile.print(dt);
+            logfile.print(" ");
+            logfile.print(st.outtemp);
+            logfile.print(" ");
+            logfile.print(st.intemp);
+            logfile.print(" ");
+            logfile.print(st.pres);
+            logfile.print(" ");
+            logfile.print(st.humin);
+            logfile.print(" ");
+            logfile.println(st.humout);
+            logfile.close();
+            // print to the serial port too:
+            Serial.println("OK!");
+            lcd2.setCursor(13, 0);
+            lcd2.print("OK ");
+          } else {
+            Serial.println("Bad data!");
+            lcd2.setCursor(13, 0);
+            lcd2.print("Bad");
+            logfile.close();
+          };
         } else {
           // При ошибке записи запускаем отсчет
           Serial.println("ERR!");
