@@ -29,9 +29,13 @@ LiquidCrystal_I2C      lcd2(LCD2_I2C_ADDR, LCD_EN, LCD_RW, LCD_RS, LCD_D4, LCD_D
 // Пины радио
 #if  defined (__AVR_ATmega2560__) || defined (__AVR_ATmega2561__)
 #define CSNPIN 49
+#define RF_OFF D49_High
+#define RF_ON D49_Low
 #define CEPIN 48
 #else
-#define CSNPIN 10
+#define CSNPIN 8
+#define RF_OFF D8_High
+#define RF_ON D8_Low
 #define CEPIN 9
 #endif
 
@@ -62,16 +66,17 @@ RF24 radio(CEPIN, CSNPIN);
 // Пайпы
 const uint64_t pipes[2] = { 0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL };
 
-// Попытки
-byte tr = 0;
-
 void setup() {
   Serial.begin(9600);
   // Настройка выводов
   D4_Out;
   D10_Out;
+#if  defined (__AVR_ATmega2560__) || defined (__AVR_ATmega2561__)
   D49_Out;
   D53_Out;
+#else
+  D8_Out;
+#endif
   // Отключить Ethernet
   D10_High;
   // Включаем дисплей
@@ -182,7 +187,7 @@ void loop() {
       if (isSD == true) {
         Serial.print("Writing...");
         // Выключить RF24
-        D49_High;
+        RF_OFF;
         // Включить SD-карту
         D4_Low;
         // Файл для записи
@@ -228,47 +233,57 @@ void loop() {
         // Выключить SD-карту
         D4_High;
         // Включить RF24
-        D49_Low;
-      } else {
-        CheckSD();
+        RF_ON;
       }
     }
-    delay(20);
   };
+  delay(20);
+  CheckSD();
 };
 
 // Проверка карты памяти
 void CheckSD() {
-  // Выключить RF24
-  D49_High;
-  // Включить SD-карту
-  D4_Low;
+  // Попытки
+  static int tr = 0;
+  unsigned long curt = millis();
+  static unsigned long oldt = 0;
   // Позиция вывода
   lcd2.setCursor(3, 0);
   // Если ошибка карты
   if (isSD == false) {
-    // Если счетчик досчитал
-    if (tr < 1) {
-      lcd2.print("Init");
-      lcd2.setCursor(3, 0);
-      if (!SD.begin(SDCS)) {
-        isSD = false;
-        Serial.println("SD not found!");
-        lcd2.print("ERR ");
-        tr = 5;
+    // Проверка интервала
+    if (curt - oldt > 1000) {
+      oldt = curt;
+      // Если счетчик досчитал
+      if (tr < 1) {
+        lcd2.print("Init ");
+        lcd2.setCursor(3, 0);
+        // Выключить RF24
+        RF_OFF;
+        // Включить SD-карту
+        D4_Low;
+        if (!SD.begin(SDCS)) {
+          // SD-карта не включилась. Ошибка.
+          isSD = false;
+          Serial.println("SD not found!");
+          lcd2.print("ERR  ");
+          tr = 5;
+        } else {
+          // SD-карта на местое. Работаем.
+          isSD = true;
+          Serial.println("SD found!");
+          lcd2.print("OK   ");
+        }
+        // Выключить SD-карту
+        D4_High;
+        // Включить RF24
+        RF_ON;
       } else {
-        isSD = true;
-        Serial.println("SD found!");
-        lcd2.print("OK  ");
+        // Вывод ошибки и счетчика
+        lcd2.print("ERR ");
+        lcd2.print(tr);
+        tr--;
       }
-    } else {
-      lcd2.print(tr);
-      lcd2.print("   ");
-      tr--;
     }
   }
-  // Выключить SD-карту
-  D4_High;
-  // Включить RF24
-  D49_Low;
 }

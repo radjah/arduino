@@ -20,7 +20,7 @@ void setup() {
   D13_Low;
   rtc.writeSqwPinMode(SquareWave1HZ);
   mydisplay.shutdown(0, false);  // turns on display
-  mydisplay.setIntensity(0, 5); // 15 = brightest
+  mydisplay.setIntensity(0, 15); // 15 = brightest
 }
 
 void loop() {
