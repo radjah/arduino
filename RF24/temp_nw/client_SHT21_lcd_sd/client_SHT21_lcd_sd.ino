@@ -86,22 +86,22 @@ void setup() {
   lcd1.clear();
   lcd1.home();
   lcd1.setCursor(0, 1);
-  lcd1.print("T('C):");
+  lcd1.print(F("T('C):"));
   lcd1.setCursor(0, 2);
-  lcd1.print("H (%):");
+  lcd1.print(F("H (%):"));
   lcd1.setCursor(0, 3);
-  lcd1.print("P(Hg):");
+  lcd1.print(F("P(Hg):"));
   lcd2.begin(20, 4);
   lcd2.setBacklightPin(BACKLIGHT, POSITIVE);
   lcd2.setBacklight(HIGH);
   lcd2.clear();
   lcd2.home();
   lcd2.setCursor(0, 0);
-  lcd2.print("SD:--");
+  lcd2.print(F("SD:--"));
   lcd2.setCursor(10, 0);
-  lcd2.print("Wr:--");
+  lcd2.print(F("Wr:--"));
   lcd2.setCursor(0, 1);
-  lcd2.print("Log:------------");
+  lcd2.print(F("Log:------------"));
   printf_begin();
   // Включаем карту
   CheckSD();
@@ -117,7 +117,7 @@ void setup() {
   radio.openReadingPipe(1, pipes[0]);
   radio.startListening();
   radio.printDetails();
-  Serial.println("This is CLIENT");
+  Serial.println(F("This is CLIENT"));
 }
 
 void loop() {
@@ -138,18 +138,18 @@ void loop() {
               MSK.minute(),
               MSK.second());
       // Вывод в порт
-      Serial.println("Recived!");
-      Serial.print("Time: ");
+      Serial.println(F("Recived!"));
+      Serial.print(F("Time: "));
       Serial.println(dt);
-      Serial.print("Outtemp: ");
+      Serial.print(F("Outtemp: "));
       Serial.println(st.outtemp);
-      Serial.print("Intemp: ");
+      Serial.print(F("Intemp: "));
       Serial.println(st.intemp);
-      Serial.print("Inpres: ");
+      Serial.print(F("Inpres: "));
       Serial.println(st.pres);
-      Serial.print("Inhum: ");
+      Serial.print(F("Inhum: "));
       Serial.println(st.humin);
-      Serial.print("Outhum: ");
+      Serial.print(F("Outhum: "));
       Serial.println(st.humout);
       // Вывод на дисплей
       lcd1.setCursor(0, 0);
@@ -164,7 +164,7 @@ void loop() {
       lcd1.print(tmpc);
       lcd1.print("/");
       if (st.outtemp == -127.0) {
-        lcd1.print("ERROR!");
+        lcd1.print(F("ERROR!"));
       } else {
         dtostrf(st.outtemp, 6, 2, tmpc);
         lcd1.print(tmpc);
@@ -185,7 +185,7 @@ void loop() {
       lcd1.print(prnt);
       // Запись на карту памяти
       if (isSD == true) {
-        Serial.print("Writing...");
+        Serial.print(F("Writing..."));
         // Выключить RF24
         RF_OFF;
         // Включить SD-карту
@@ -214,20 +214,20 @@ void loop() {
             logfile.println(st.humout);
             logfile.close();
             // print to the serial port too:
-            Serial.println("OK!");
+            Serial.println(F("OK!"));
             lcd2.setCursor(13, 0);
-            lcd2.print("OK ");
+            lcd2.print(F("OK "));
           } else {
-            Serial.println("Bad data!");
+            Serial.println(F("Bad data!"));
             lcd2.setCursor(13, 0);
-            lcd2.print("Bad");
+            lcd2.print(F("Bad"));
             logfile.close();
           };
         } else {
           // При ошибке записи запускаем отсчет
-          Serial.println("ERR!");
+          Serial.println(F("ERR!"));
           lcd2.setCursor(13, 0);
-          lcd2.print("ERR");
+          lcd2.print(F("ERR"));
           isSD = false;
         }
         // Выключить SD-карту
@@ -256,7 +256,7 @@ void CheckSD() {
       oldt = curt;
       // Если счетчик досчитал
       if (tr < 1) {
-        lcd2.print("Init ");
+        lcd2.print(F("Init "));
         lcd2.setCursor(3, 0);
         // Выключить RF24
         RF_OFF;
@@ -265,13 +265,13 @@ void CheckSD() {
         if (!SD.begin(SDCS)) {
           // SD-карта не включилась. Ошибка.
           isSD = false;
-          Serial.println("SD not found!");
-          lcd2.print("ERR  ");
+          Serial.println(F("SD not found!"));
+          lcd2.print(F("ERR  "));
           tr = 5;
         } else {
           // SD-карта на местое. Работаем.
           isSD = true;
-          Serial.println("SD found!");
+          Serial.println(F("SD found!"));
           lcd2.print("OK   ");
         }
         // Выключить SD-карту
@@ -280,10 +280,11 @@ void CheckSD() {
         RF_ON;
       } else {
         // Вывод ошибки и счетчика
-        lcd2.print("ERR ");
+        lcd2.print(F("ERR "));
         lcd2.print(tr);
         tr--;
       }
     }
   }
 }
+
