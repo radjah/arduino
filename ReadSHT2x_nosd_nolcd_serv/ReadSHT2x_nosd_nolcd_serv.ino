@@ -45,8 +45,7 @@ RTC_DS1307 rtc;
 // Температуры на улице
 OneWire dswire(2);
 DallasTemperature sensors(&dswire);
-DeviceAddress dsaddr1;
-DeviceAddress dsaddr2;
+DeviceAddress dsaddr1, dsaddr2;
 
 bool UseBMP, CanServ;
 
@@ -57,7 +56,7 @@ void setup()
 {
   D7_Out;
   D8_Out;
-  Serial.begin(9600);
+  Serial.begin(115200);
   // i2c
   Wire.begin();
   // Часы
@@ -80,25 +79,27 @@ void setup()
       Serial.println(F("Found one DS18B20!"));
       Serial.println(F("Using BMP180 for inner temperature."));
       sensors.getAddress(dsaddr1, 0);
+      sensors.setResolution(dsaddr1, 12);
       UseBMP = true;
       CanServ = true;
       break;
     default:
       Serial.println(F("Found two or more DS18B20!"));
       Serial.println(F("Reading ADDR from EEPROM"));
-      ReadAddr(dsaddr1, 0);
-      ReadAddr(dsaddr2, 1);
+      ReadAddr(dsaddr1, 0); // outtemp
+      ReadAddr(dsaddr2, 1); // intemp
       Serial.print(F("dsaddr1 outtemp: "));
       printAddress(dsaddr1);
       Serial.println();
       Serial.print(F("dsaddr2  intemp: "));
       printAddress(dsaddr2);
       Serial.println();
-      sensors.setResolution(dsaddr2, 10);
+      sensors.setResolution(dsaddr2, 12);
+      sensors.setResolution(dsaddr1, 12);
       UseBMP = false;
+      CanServ = false;
   }
   ServiceMode();
-  sensors.setResolution(dsaddr1, 10);
   // BMP
   bmp.begin();
   // DHT
@@ -120,14 +121,14 @@ void loop()
 {
   // Пакет для отправки
   sendtemp st;
+  // Запрос измерения
+  sensors.requestTemperatures();
   // Получаем время
   DateTime now = rtc.now();
   // GMT + 3
   DateTime MSK (now + 3 * 3600);
   st.dt = MSK.unixtime();
-  // Запрос измерения
-  sensors.requestTemperatures();
-  if (UseBMP) {
+  if (UseBMP == true) {
     st.intemp = bmp.readTemperature();
   } else {
     st.intemp = sensors.getTempC(dsaddr2);
@@ -145,7 +146,7 @@ void loop()
     Serial.println(F("ERROR: not sended!"));
   radio.startListening();
   // Задержка
-  delay_ms(1500);
+  delay_ms(1000);
 }
 
 // Настройка датчиков
@@ -166,7 +167,9 @@ void ServiceMode() {
   // Признаки записи;
   D7_In;
   D8_In;
-  sensors.getAddress(dsaddr1, 0);
+  if (D7_Read or D8_Read) {
+    sensors.getAddress(dsaddr1, 0);
+  }
   if (D7_Read == true) {
     Serial.print(F("Writing addr for outtemp: "));
     printAddress(dsaddr1);
