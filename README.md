@@ -57,18 +57,6 @@
 
 Попытки перенести старые скетчи на Due.
 
-## ReadSHT2x ##
-
-Пример для чтения значений с датчика SHT21. Использовалась библиотека [SHT2x-Arduino-Library](https://github.com/misenso/SHT2x-Arduino-Library).
-
-## ReadSHT2x_nosd ##
-
-Предыдущий пример без записи протокола на SD-карту.
-
-## ReadSHT2x\_nosd\_nolcd ##
-
-Тоже самое, но еще и без вывода на дисплей.
-
 ## bin_counter ##
 
 Тупой бинарный счет для 7-ми сегментного индикатора на 8 знакомест с MAX7219. Использовалась библиотека [LedControl](https://www.pjrc.com/teensy/td_libs_LedControl.html).
