@@ -54,8 +54,8 @@ Adafruit_BMP085 bmp;
 
 void setup()
 {
-  D7_Out;
-  D8_Out;
+  pinMode(7, INPUT_PULLUP);
+  pinMode(8, INPUT_PULLUP);;
   Serial.begin(115200);
   // i2c
   Wire.begin();
@@ -167,10 +167,10 @@ void ServiceMode() {
   // Признаки записи;
   D7_In;
   D8_In;
-  if (D7_Read or D8_Read) {
+  if (!D7_Read or !D8_Read) {
     sensors.getAddress(dsaddr1, 0);
   }
-  if (D7_Read == true) {
+  if (D7_Read == false) { // outtemp
     Serial.print(F("Writing addr for outtemp: "));
     printAddress(dsaddr1);
     Serial.println();
@@ -179,7 +179,7 @@ void ServiceMode() {
     Blink(1000);
   } else {
     // Если писать адрес второго
-    if (D8_Read == true) {
+    if (D8_Read == false) { // intemp
       Serial.print(F("Writing addr for inttemp: "));
       printAddress(dsaddr1);
       Serial.println();
