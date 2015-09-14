@@ -161,8 +161,12 @@ void loop() {
       char prnt[15] = "";
       // Вывод температуры внутри и снаружи.
       lcd1.setCursor(7, 1);
-      dtostrf(st.intemp, 6, 2, tmpc);
-      lcd1.print(tmpc);
+      if (st.intemp == -127.0) {
+        lcd1.print(F("ERROR!"));
+      } else {
+        dtostrf(st.intemp, 6, 2, tmpc);
+        lcd1.print(tmpc);
+      }
       lcd1.print("/");
       if (st.outtemp == -127.0) {
         lcd1.print(F("ERROR!"));
@@ -201,7 +205,7 @@ void loop() {
         File logfile = SD.open(fn, FILE_WRITE);
         if (logfile == true) {
           // Валидация полученных данных
-          if (!(st.outtemp == 85.0) & !(st.outtemp == -127) & !(isnan(st.humout))) {
+          if (!(st.intemp == 85.0) & !(st.intemp == -127) & !(st.outtemp == 85.0) & !(st.outtemp == -127) & !(isnan(st.humout))) {
             logfile.print(dt);
             logfile.print(" ");
             logfile.print(st.outtemp);
