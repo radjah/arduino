@@ -12,7 +12,7 @@
 #include <CyberLib.h>
 
 // Датчик висит на D6
-#define DHTPIN 6
+#define DHTPIN 4
 #define DHTTYPE DHT22
 
 #define TIMESPAN 3
@@ -43,7 +43,7 @@ const uint64_t pipes[2] = { 0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL };
 RTC_DS1307 rtc;
 
 // Температуры на улице
-OneWire dswire(2);
+OneWire dswire(6);
 DallasTemperature sensors(&dswire);
 DeviceAddress dsaddr1, dsaddr2;
 
@@ -137,6 +137,12 @@ void loop()
   st.humin = SHT2x.GetHumidity();
   st.pres = bmp.readPressure() / 133.32;
   st.humout = dht.readHumidity();
+  Serial.println(st.dt);
+  Serial.println(st.intemp);
+  Serial.println(st.outtemp);
+  Serial.println(st.humin);
+  Serial.println(st.humout);
+  Serial.println(st.pres);
   // Отправляем
   radio.stopListening();
   bool ok = radio.write(&st, sizeof(sendtemp));
