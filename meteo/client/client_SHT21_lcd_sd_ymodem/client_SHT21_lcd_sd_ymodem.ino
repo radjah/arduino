@@ -132,7 +132,7 @@ void loop() {
       done = radio.read( &st, sizeof(sendtemp) );
       DateTime MSK (st.dt);
       char dt[21] = "";
-      sprintf(dt, "%02d/%02d/%02d  %02d:%02d:%02d", MSK.year(),
+      sprintf(dt, "%04d/%02d/%02d  %02d:%02d:%02d", MSK.year(),
               MSK.month(),
               MSK.day(),
               MSK.hour(),
@@ -274,7 +274,7 @@ void loop() {
         Serial.println(F(" found! Starting transfer..."));
         lcd2.setCursor(3, 0);
         lcd2.print("TRANS");
-        File dataFile = SD.open("filename");
+        File dataFile = SD.open(filename);
         XModem xmodem(&Serial, ModeYModem);
         xmodem.sendFile(dataFile, filename);
         dataFile.close();

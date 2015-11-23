@@ -13,7 +13,7 @@
 
 // Датчик висит на D6
 #define DHTPIN 4
-#define DHTTYPE DHT22
+#define DHTTYPE DHT21
 
 #define TIMESPAN 3
 //#define SETTIME
