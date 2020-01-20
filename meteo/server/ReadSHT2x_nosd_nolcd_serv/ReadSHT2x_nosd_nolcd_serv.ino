@@ -16,7 +16,7 @@
 #define DHTTYPE DHT21
 
 #define TIMESPAN 3
-//#define SETTIME
+// #define SETTIME
 
 #define CSNPIN 10
 #define CEPIN 9
@@ -65,7 +65,7 @@ void setup()
   sensors.begin();
 #ifdef SETTIME
   // 15 - примерное время прошивки в секундах
-  rtc.adjust(DateTime(__DATE__, __TIME__) - TimeSpan(TIMESPAN * 3600 - 15));
+  rtc.adjust(DateTime(__DATE__, __TIME__) - TimeSpan(TIMESPAN * 3600 - 10));
 #endif
   // Проверяем датчики
   byte dc = sensors.getDeviceCount();
@@ -101,11 +101,15 @@ void setup()
   }
   ServiceMode();
   // BMP
+  Serial.println(F("BMP180 init"));
   bmp.begin();
+  Serial.println(F("BMP180 OK"));
   // DHT
   dht.begin();
+  Serial.println(F("DHT21 OK"));
   // Радио
   radio.begin();
+  Serial.println(F("nRF24 OK"));
   // Настройка
   radio.setRetries(15, 15);
   radio.setAutoAck(1);
@@ -115,6 +119,7 @@ void setup()
   radio.openWritingPipe(pipes[0]);
   radio.openReadingPipe(1, pipes[1]);
   radio.startListening();
+  Serial.println(F("Setup finished"));
 }
 
 void loop()
