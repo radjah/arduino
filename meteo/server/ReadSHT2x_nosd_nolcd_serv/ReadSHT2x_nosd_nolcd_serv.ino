@@ -142,11 +142,17 @@ void loop()
   st.humin = SHT2x.GetHumidity();
   st.pres = bmp.readPressure() / 133.32;
   st.humout = dht.readHumidity();
+  Serial.print(F("unixtime:"));
   Serial.println(st.dt);
+  Serial.print(F("intemp:  "));
   Serial.println(st.intemp);
+  Serial.print(F("outtemp: "));
   Serial.println(st.outtemp);
+  Serial.print(F("humin:   "));
   Serial.println(st.humin);
+  Serial.print(F("humout:  "));
   Serial.println(st.humout);
+  Serial.print(F("pres:    "));
   Serial.println(st.pres);
   // Отправляем
   radio.stopListening();
