@@ -4,9 +4,11 @@
 #include <RTClib.h>
 #include <SHT2x.h>
 #include <Adafruit_BMP085.h>
+/*
 #include <SPI.h>
 #include <nRF24L01.h>
 #include <RF24.h>
+*/
 #include <DHT.h>
 #include <EEPROM2.h>
 #include <CyberLib.h>
@@ -30,14 +32,18 @@ struct sendtemp {
   float    humout;   // Влажность относительная
 };
 
+/*
 // Радио
 RF24 radio(CEPIN, CSNPIN);
+*/
 
 // Влажность на улице
 DHT dht(DHTPIN, DHTTYPE);
 
+/*
 // Пайпы
 const uint64_t pipes[2] = { 0xF0F0F0F0E1LL, 0xF0F0F0F0D2LL };
+*/
 
 // Часы DS1307
 RTC_DS1307 rtc;
@@ -107,6 +113,7 @@ void setup()
   // DHT
   dht.begin();
   Serial.println(F("DHT21 OK"));
+  /*
   // Радио
   radio.begin();
   Serial.println(F("nRF24 OK"));
@@ -119,6 +126,7 @@ void setup()
   radio.openWritingPipe(pipes[0]);
   radio.openReadingPipe(1, pipes[1]);
   radio.startListening();
+  */
   Serial.println(F("Setup finished"));
 }
 
@@ -154,6 +162,7 @@ void loop()
   Serial.println(st.humout);
   Serial.print(F("pres:    "));
   Serial.println(st.pres);
+  /*
   // Отправляем
   radio.stopListening();
   bool ok = radio.write(&st, sizeof(sendtemp));
@@ -162,6 +171,8 @@ void loop()
   else
     Serial.println(F("ERROR: not sended!"));
   radio.startListening();
+  */
+  Serial.println(F("==================="));
   // Задержка
   delay_ms(1000);
 }
@@ -225,4 +236,3 @@ void printAddress(DeviceAddress deviceAddress)
     Serial.print(deviceAddress[i], HEX);
   }
 }
-
